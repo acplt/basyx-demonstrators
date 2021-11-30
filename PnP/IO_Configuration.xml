@@ -1,0 +1,44 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<iomapping shm="_OPC_UA_Basys" size="144">
+  <ioelement name="PP01.XAxis_Extract"   direction="FromSHM" type="bool"  size="4" unit="none" signal="0" />
+  <ioelement name="PP01.XAxis_Retract"   direction="FromSHM" type="bool"  size="4" unit="none" signal="1" />
+  <ioelement name="PP01.ZAxis_Extract"   direction="FromSHM" type="bool"  size="4" unit="none" signal="2" />
+  <ioelement name="PP01.ZAxis_Retract"   direction="FromSHM" type="bool"  size="4" unit="none" signal="3" />
+  <ioelement name="PP01.Gripper_Close"   direction="FromSHM" type="bool"  size="4" unit="none" signal="4" />
+  <ioelement name="PP01.Gripper_Open"    direction="ToSHM"   type="bool"  size="4" unit="none" signal="5" />
+  <ioelement name="PP01.XAxis_Extracted" direction="ToSHM"   type="bool"  size="4" unit="none" signal="6" />
+  <ioelement name="PP01.XAxis_Retracted" direction="ToSHM"   type="bool"  size="4" unit="none" signal="7" />
+  <ioelement name="PP01.ZAxis_Extracted" direction="ToSHM"   type="bool"  size="4" unit="none" signal="8" />
+  <ioelement name="PP01.ZAxis_Retracted" direction="ToSHM"   type="bool"  size="4" unit="none" signal="9" />
+  <ioelement name="PP01.Gripper_IsOpen"  direction="ToSHM"   type="bool"  size="4" unit="none" signal="10" />
+                                                                          
+  <ioelement name="GF01.Conveyor_On"     direction="FromSHM" type="bool"  size="4" unit="none" signal="11" />
+  <ioelement name="GF02.Conveyor_On"     direction="FromSHM" type="bool"  size="4" unit="none" signal="12" />
+  <ioelement name="GF03.Conveyor_On"     direction="FromSHM" type="bool"  size="4" unit="none" signal="13" />
+  <ioelement name="GF04.Conveyor_On"     direction="FromSHM" type="bool"  size="4" unit="none" signal="14" />
+  <ioelement name="GF05.Conveyor_On"     direction="FromSHM" type="bool"  size="4" unit="none" signal="15" />
+  <ioelement name="GF06.Conveyor_On"     direction="FromSHM" type="bool"  size="4" unit="none" signal="16" />
+  <ioelement name="GF07.Conveyor_On"     direction="FromSHM" type="bool"  size="4" unit="none" signal="17" />
+                                                                          
+  <ioelement name="LS01.Piece_Detected"  direction="ToSHM"   type="bool"  size="4" unit="none" signal="18" />
+  <ioelement name="LS02.Piece_Detected"  direction="ToSHM"   type="bool"  size="4" unit="none" signal="19" />
+  <ioelement name="LS03.Piece_Detected"  direction="ToSHM"   type="bool"  size="4" unit="none" signal="20" />
+  <ioelement name="LS04.Piece_Detected"  direction="ToSHM"   type="bool"  size="4" unit="none" signal="21" />
+  <ioelement name="LS05.Piece_Detected"  direction="ToSHM"   type="bool"  size="4" unit="none" signal="22" />
+  <ioelement name="LS06.Piece_Detected"  direction="ToSHM"   type="bool"  size="4" unit="none" signal="23" />
+  <ioelement name="LS07.Piece_Detected"  direction="ToSHM"   type="bool"  size="4" unit="none" signal="24" />
+  <ioelement name="LS08.Piece_Detected"  direction="ToSHM"   type="bool"  size="4" unit="none" signal="25" />
+  <ioelement name="LS09.Piece_Detected"  direction="ToSHM"   type="bool"  size="4" unit="none" signal="26" />
+  <ioelement name="LS010.Piece_Detected" direction="ToSHM"   type="bool"  size="4" unit="none" signal="27" />
+
+  <ioelement name="CR01.Trolly_Position" direction="FromSHM" type="float" size="4" unit="m"    signal="29" />
+  <ioelement name="CR01.Bridge_Position" direction="FromSHM" type="float" size="4" unit="m"    signal="20" />
+  <ioelement name="CR01.Hook_XPosition"  direction="FromSHM" type="float" size="4" unit="m"    signal="30" />
+  <ioelement name="CR01.Hook_YPosition"  direction="FromSHM" type="float" size="4" unit="m"    signal="31" />
+  <ioelement name="CR01.Hook_ZPosition"  direction="FromSHM" type="float" size="4" unit="m"    signal="32" />
+
+  <ioelement name="Generator.Create"     direction="FromSHM" type="bool" size="4" unit="none"  signal="33" />
+  <ioelement name="Generator.Delete"     direction="FromSHM" type="bool" size="4" unit="none"  signal="34" />
+  <ioelement name="Generator.LoadType"   direction="FromSHM" type="int"  size="4" unit="none"  signal="35" />
+
+</iomapping>
