@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<iomapping shm="Hilt3DShm" size="584" fieldbus="MODBUS" amsNetId="192.168.188.63.1.1" s7IpAddress="192.168.188.201" codesysIpAddress="10.128.96.26">
+<iomapping shm="Hilt3DShm" size="596" fieldbus="MODBUS" amsNetId="192.168.188.63.1.1" s7IpAddress="192.168.188.201" codesysIpAddress="10.128.96.26">
   <ioelement direction="FromSHM" name="FS01_CoverUnit.Down" adsSymbolName="" s7Variable="" signal="0" size="4" type="bool" unit="none" />
   <ioelement direction="FromSHM" name="FS01_CoverUnit.Unlock" adsSymbolName="" s7Variable="" signal="1" size="4" type="bool" unit="none" />
   <ioelement direction="FromSHM" name="FS01_CoverUnit.Up" adsSymbolName="" s7Variable="" signal="2" size="4" type="bool" unit="none" />
@@ -146,4 +146,7 @@
   <ioelement direction="ToSHM" name="SS01_ScrewDriver.InUpperPos" s7Variable="" signal="143" size="4" type="bool" unit="none" />
   <ioelement direction="ToSHM" name="SS01_ScrewDriver.Reached" adsSymbolName="" s7Variable="" signal="144" size="4" type="bool" unit="none" />
   <ioelement direction="ToSHM" name="TS01_TurnTable.InPosition" adsSymbolName="TS01.InPosition" s7Variable="" signal="145" size="4" type="bool" unit="none" />
+  <ioelement direction="FromSHM" name="Tank_Yellow.Level" adsSymbolName="" s7Variable="" signal="146" size="4" type="float" unit="none" />
+  <ioelement direction="FromSHM" name="Tank_Blue.Level" adsSymbolName="" s7Variable="" signal="147" size="4" type="float" unit="none" />
+  <ioelement direction="FromSHM" name="Tank_Water.Level" adsSymbolName="" s7Variable="" signal="148" size="4" type="float" unit="none" />
 </iomapping>
