@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<iomapping shm="Hilt3DShm" size="596" fieldbus="MODBUS" amsNetId="192.168.188.63.1.1" s7IpAddress="192.168.188.201" codesysIpAddress="10.128.96.26">
+<iomapping shm="Hilt3DShm" size="596" fieldbus="MODBUS" amsNetId="192.168.188.63.1.1" s7IpAddress="192.168.188.201" codesysIpAddress="192.168.188.201">
   <ioelement direction="FromSHM" name="FS01_CoverUnit.Down" adsSymbolName="" s7Variable="" signal="0" size="4" type="bool" unit="none" />
   <ioelement direction="FromSHM" name="FS01_CoverUnit.Unlock" adsSymbolName="" s7Variable="" signal="1" size="4" type="bool" unit="none" />
   <ioelement direction="FromSHM" name="FS01_CoverUnit.Up" adsSymbolName="" s7Variable="" signal="2" size="4" type="bool" unit="none" />
