@@ -96,6 +96,7 @@ public class Pallet : MonoBehaviour
 
     public void Reset()
     {
+        RemoveAllWorkPieces();
         body.isKinematic = true;
         body.useGravity = false;
         colliders.ForEach(c => c.enabled = false);
@@ -134,6 +135,19 @@ public class Pallet : MonoBehaviour
         }
     }
 
+    public void RemoveAllWorkPieces()
+    {
+        for (int i = 0; i < workPieces.Count; i++)
+        {
+            if (workPieces[i].transform.GetChild(2).gameObject.activeSelf)
+            {
+                workPieces[i].transform.GetChild(0).gameObject.SetActive(false);
+                workPieces[i].transform.GetChild(1).gameObject.SetActive(false);
+                workPieces[i].transform.GetChild(2).gameObject.SetActive(false);
+            }
+        }
+    }
+
     public void AddWorkPiece(int loadType, Material color)
     {
         for (int i = 0; i < workPieces.Count; i++)
@@ -163,6 +177,22 @@ public class Pallet : MonoBehaviour
                 }
                 break;
             }
+        }
+    }
+
+    public int WorkPieceCount
+    {
+        get
+        {
+            int count = 0;
+            for (int i = 0; i < workPieces.Count; i++)
+            {
+                if (workPieces[i].transform.GetChild(2).gameObject.activeSelf)
+                {
+                    count++;
+                }
+            }
+            return count;
         }
     }
 }

@@ -8,7 +8,7 @@ public class QR_Label : MonoBehaviour
     public string Content;
     public bool Modify;
 
-    void Update()
+    private void Update()
     {
         if (Modify)
         {
@@ -17,4 +17,14 @@ public class QR_Label : MonoBehaviour
             gameObject.GetComponent<MeshRenderer>().sharedMaterial = QR_Code.Encode(Content);
         }
     }
+
+    private void OnMouseDown()
+    {
+        //Debug.Log("Mousebutton clicked");
+        if (Input.GetKey(KeyCode.LeftControl))
+        {
+            Application.OpenURL(Content);
+        }
+    }
+
 }

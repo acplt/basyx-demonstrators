@@ -2,8 +2,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 
-public class PalletFeeder : MonoBehaviour
+public class PalletFeeder : SimBehaviour
 {
+    public int WorkPieceCount;
     public Vector3 Direction;
     public Vector3 Offset;
     public float Distance;
@@ -26,6 +27,15 @@ public class PalletFeeder : MonoBehaviour
         else
         {
             Pallet = null;
+        }
+
+        if (Pallet != null)
+        {
+            WorkPieceCount = Pallet.WorkPieceCount;
+        }
+        else
+        {
+            WorkPieceCount = 0;
         }
     }
 

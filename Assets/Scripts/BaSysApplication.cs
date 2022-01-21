@@ -76,8 +76,9 @@ public class BaSysApplication : MonoBehaviour
                         }
                         else if (args[i].Contains("REGISTRY"))
                         {
-                            Url = Url.Replace("localhost", args[i].Replace("REGISTRY-", ""));
+                            Url = Url.Replace("{{address}}", args[i].Replace("REGISTRY-", ""));
                         }
+                        //http://{{address}}:4999/api/v1/registry/http%3A%2F%2Fbasys4.de%2Fshells%2Fdemonstrator%2F{{id}}/redirect/ui
                     }
                 }
             }
@@ -89,7 +90,7 @@ public class BaSysApplication : MonoBehaviour
             QR_Label label = simBehavior.gameObject.FindComponent<QR_Label>();
             if (label != null)
             {
-                label.Content = Url.Replace("{{aasId}}", simBehavior.gameObject.name.Split('_')[0]);
+                label.Content = Url.Replace("{{id}}", simBehavior.gameObject.name.Split('_')[0]);
                 label.Modify = true;
             }
         }
@@ -228,6 +229,12 @@ public class BaSysApplication : MonoBehaviour
             }
         }
         cameraOldIndex = cameraIndex;
+
+        //if (GUI.Button(new Rect(900, 0, 60, 20), "Test", buttonGrayStyle))
+        //{
+        //    var feeder = GameObject.FindObjectsOfType<PalletFeeder>().ToList();
+        //    feeder.Last().Pallet.AddWorkPiece(3, null);
+        //}
 
         GUI.contentColor = Color.white;
         GUI.color = Color.white;
