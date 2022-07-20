@@ -15,7 +15,13 @@ set(CCSERVER_SOURCE_FILES
     "src/ccs_io.c"
 )
 
-# Minimum Working Example executable
+# Control Component Server executable
 add_executable(ccs_server ${CCSERVER_SOURCE_FILES} "src/ccs_server.c")
 target_include_directories(ccs_server PUBLIC "inc")
 target_link_libraries(ccs_server ccProfilesUA)
+
+# Shared Memory Tool executable
+if(WIN32)
+add_executable(ccs_shmtool "src/ccs_io.c" "src/ccs_shmtool.c")
+target_include_directories(ccs_shmtool PUBLIC "inc")
+endif()
