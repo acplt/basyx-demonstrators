@@ -26,7 +26,7 @@ jobs:
       run: |
         pyinstaller acplt\aas\aas_repository_server\aas_repository_server.spec
         cd dist &&
-        zip -r AAS_Repository_Server_Windows.zip AAS_Repository_Server
+        7z a AAS_Repository_Server_Windows.zip AAS_Repository_Server
     - name: Archive AAS Repository Server
       uses: actions/upload-artifact@v3
       with:
