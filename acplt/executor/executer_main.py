@@ -1,5 +1,6 @@
 import asyncio
 import configparser
+import traceback
 
 import pycamunda.variable
 import pycamunda.externaltask
@@ -78,6 +79,12 @@ async def main():
 
 
 if __name__ == '__main__':
-    asyncio.run(main())
-    # TODO: check if async funktioniert
-
+    try:
+        asyncio.run(main())
+        # TODO: check if async funktioniert
+    except Exception as e:
+        print("Running with configuration: {}".format({s: dict(config.items(s)) for s in config.sections()}))
+        tb = traceback.format_exc()
+        print(tb)
+        print(e)
+        input("Ups")
