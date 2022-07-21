@@ -24,7 +24,7 @@ jobs:
         python acplt/aas/aas_repository_server/aas_generator/control_component_submodel.py
     - name: Build AAS Repository Server
       run: |
-        pyinstaller acplt\aas\aas_repository_server\aas_repository_server.spec
+        pyinstaller acplt/aas/aas_repository_server/aas_repository_server.spec
         cd dist/ &&
         zip -r AAS_Repository_Server_Windows.zip AAS_Repository_Server
     - name: Archive AAS Repository Server
