@@ -1,0 +1,22 @@
+{
+    "data": {
+        "idShort": "exampleSM",
+        "modelType": {
+            "name": "Submodel"
+        },
+        "identification": {
+            "id": "https://example.com/sm/test_submodel03",
+            "idType": "IRI"
+        },
+        "semanticId": {
+            "keys": [
+                {
+                    "type": "GlobalReference",
+                    "idType": "IRI",
+                    "value": "https://example.com/semanticIDs/ONE",
+                    "local": false
+                }
+            ]
+        }
+    }
+}
