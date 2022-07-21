@@ -13,10 +13,7 @@ import secrets
 import configparser
 
 config = configparser.ConfigParser()
-config.read([
-    os.path.join(os.path.dirname(__file__), "config.ini"),
-    os.path.join(os.path.dirname(__file__), "config.ini.default")
-])
+config.read(["config.ini"])
 USER_FILE = config["AUTHENTICATION"]["USER_FILE"]
 
 
@@ -25,7 +22,7 @@ SECRET_KEY = secrets.token_hex(64)
 
 def load_user_file() -> Dict[str, str]:
     users: Dict[str, str] = {}
-    with open(os.path.join(os.path.dirname(__file__), "users.dat"), "r") as file:
+    with open("users.dat", "r") as file:
         data = file.read().rstrip("\n").split("\n")
         for i in data:
             try:
@@ -37,7 +34,7 @@ def load_user_file() -> Dict[str, str]:
 
 
 def save_user_file():
-    with open(os.path.join(os.path.dirname(__file__), "users.dat"), "w") as file:
+    with open("users.dat", "w") as file:
         for usr, psw in USERS.items():
             file.write(usr + ", " + psw + "\n")
         file.close()
