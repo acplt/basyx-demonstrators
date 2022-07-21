@@ -32,7 +32,7 @@ jobs:
       with:
         name: acplt-aas
         path: |
-          AAS_Repository_Server_Windows.zip
+          dist/AAS_Repository_Server_Windows.zip
 
 
 
