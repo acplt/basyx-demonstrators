@@ -9,7 +9,7 @@ on:
 
 jobs:
   build_aas_repository:
-    runs-on: [ubuntu-latest]
+    runs-on: [windows-latest]
     steps:
     - uses: actions/checkout@v2
       with:
@@ -18,21 +18,21 @@ jobs:
       run: |
         python -m pip install --upgrade pip
         pip install pyinstaller
-        pip install -r acplt/aas/requirements.txt
+        pip install -r acplt\aas\requirements.txt
     - name: Create Asset Administration Shells
       run: |
-        python acplt/aas/aas_repository_server/aas_generator/control_component_submodel.py
+        python acplt\aas\aas_repository_server\aas_generator\control_component_submodel.py
     - name: Build AAS Repository Server
       run: |
-        pyinstaller acplt/aas/aas_repository_server/aas_repository_server.spec
-        cd dist/ &&
+        pyinstaller acplt\aas\aas_repository_server\aas_repository_server.spec
+        cd dist &&
         zip -r AAS_Repository_Server_Windows.zip AAS_Repository_Server
     - name: Archive AAS Repository Server
       uses: actions/upload-artifact@v3
       with:
         name: acplt-aas
         path: |
-          dist/AAS_Repository_Server_Windows.zip
+          dist\AAS_Repository_Server_Windows.zip
 
 
 
