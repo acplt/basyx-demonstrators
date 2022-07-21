@@ -1,0 +1,38 @@
+name: Build
+
+on:
+  push:
+    paths: 
+      - .github/workflows/acplt-aas.yaml
+      - acplt/aas/**
+      - '!acplt/aas/**/README.md'
+
+jobs:
+  build_aas_repository:
+    runs-on: [windows-latest]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r acplt\aas\requirements.txt
+    - name: Create Asset Administration Shells
+      run: |
+        python acplt\aas\aas_repository_server\aas_generator\control_component_submodel.py
+    - name: Build AAS Repository Server
+      run: |
+        pyinstaller acplt\aas\aas_repository_server\aas_repository_server.spec
+        cd dist &&
+        7z a AAS_Repository_Server_Windows.zip AAS_Repository_Server
+    - name: Archive AAS Repository Server
+      uses: actions/upload-artifact@v3
+      with:
+        name: acplt-aas
+        path: |
+          dist\AAS_Repository_Server_Windows.zip
+
+
+
