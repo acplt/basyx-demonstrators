@@ -3,13 +3,23 @@
 This folder contains a simple AAS repository server based on the 
 [BaSyx Python SDK](https://github.com/eclipse-basyx/basyx-python-sdk).
 
-**Hacky Hacky Notice**
+The server runs on `http://localhost:1120`, for details see `aas_repository_server/config.ini`.
+(You can remember the Port via `AAS`: `A`: 1st letter of the alphabet, `S`: 20th letter of the alphabet)
+
+*Note:* Port 1120 is apparently used by the battle.net file transfer protocol. We advise against running this 
+demonstrator, if you are playing World of Warcraft at the same time.
+
+**Hacky-Hacky Note**
 This server provides the most basic functionalities and is **not** maintained. 
-The maintained version will be found in a adequately named repository at https://github.com/acplt/ 
-as soon as some organisatorical problems are solved.
+The maintained version will be found in an adequately named repository at https://github.com/acplt/ 
+as soon as some organisatorical problems are solved. 
+There, also more and better documentation will be found.
+
+**IT IS NOT SAFE TO USE THIS SERVER IN PRODUCTION!**
 
 ## Installation Instructions
 
+This assumes, you have Python with a version >= 3.9 installed
 ```shell
 pip install -r requirements.txt
 ```
@@ -32,6 +42,13 @@ It is advised to remember the password, since it is hashed and salted and can no
 1. Read the AAS in to the basyx-python SDK
 2. Import the `storage.RegistryObjectStore` 
 3. Add them to the RegistryObjectStore via the `.add()` function
+
+For the ease of use, run: 
+```shell
+python aas_generator.cc_identifier_to_endpoint_address.py
+```
+This automatically clears, generates and repopulates the AAS Repository Server with the suiting Control Component 
+Submodels needed for this Demonstrator
 
 ### Running the Server (The Hacky Way)
 
