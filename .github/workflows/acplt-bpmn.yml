@@ -1,0 +1,29 @@
+name: acplt-bpmn
+
+on: 
+  push:
+    paths:
+      - .github/workflows/acplt-bpmn.yml
+      - acplt/bpmn/**
+      - '!acplt/bpmn/**/README.md'
+
+jobs:
+  pack-camunda:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Download Camunda
+      run: |
+        mkdir camunda-bpm-run
+        cd camunda-bpm-run
+        curl https://downloads.camunda.cloud/release/camunda-bpm/run/7.17/camunda-bpm-run-7.17.0.tar.gz -L --output camunda-bpm-run.tar.gz
+        tar xfvz camunda-bpm-run.tar.gz
+        rm camunda-bpm-run.tar.gz
+        rm -rf internal/example
+        cp ../acplt/bpmn/*.bpmn ./configuration/resources/
+    - name: Archive control component server
+      uses: actions/upload-artifact@v3
+      with:
+        name: acplt-bpmn
+        path: |
+          camunda-bpm-run
