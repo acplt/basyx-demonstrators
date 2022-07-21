@@ -13,6 +13,8 @@ add_subdirectory(ccProfilesUA)
 # Source files excluding main
 set(CCSERVER_SOURCE_FILES 
     "src/ccs_io.c"
+    "src/ccs_type_generic.c"
+    "src/ccs_type_robot.c"
 )
 
 # Control Component Server executable

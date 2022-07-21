@@ -8,6 +8,8 @@
 #include <stdlib.h>
 
 #include <ccs_io.h>
+#include <ccs_ioList.h>
+#include <ccs_type_robot.h>
 
 UA_Boolean running = true;
 static void
@@ -53,20 +55,29 @@ parseCLI(int argc, char **argv, UA_UInt16 *port) {
     return EXIT_SUCCESS;
 }
 
+static int ccInstanceCounter = 0;
+
 static void
-createControlComponentFromType(UA_Server *server, size_t type) {
-    /* Create control component and fill in example informations */
+createControlComponentFromType(UA_Server *server, char* name, char* type) {
     C3_CC *cc = C3_CC_new();
     C3_Info info;
-    info.id = "CC1";
-    info.name = "CC1";
-    info.description = "Represents the control component 1";
+    info.id = name;
+    info.name = name;
+    info.description = name;
     info.profile = C3_PROFILE_BASYSDEMO;
-    info.type = "CCType";
+    info.type = type;
     C3_CC_setInfo(cc, &info);
 
-    UA_NodeId typeId = UA_NODEID_NUMERIC(NS_DSTYPES, type+1);
-    UA_NodeId id = UA_NODEID_NUMERIC(NS_APPLICATION, 1);
+    int typeNo = 0;
+    if(strcmp(type, "Robot") == 0) {
+        ccs_type_robot(cc);
+        typeNo = 1;
+    }else{
+        return;
+    }
+
+    UA_NodeId typeId = UA_NODEID_NUMERIC(NS_DSTYPES, typeNo);
+    UA_NodeId id = UA_NODEID_NUMERIC(NS_APPLICATION, ++ccInstanceCounter);
     createControlComponentType(server, cc, typeId);
     createControlComponent(server, cc, typeId, id);
 }
@@ -128,19 +139,12 @@ addVariable(UA_Server *server, UA_UInt32 id, CCS_IO_SHMVARIABLE* variable) {
                                         simIODataSource, variable, NULL);
 }
 
-//TODO: get this from IO_Configuration.xml
-static unsigned int CCS_IO_VARS_SIZE = 2;
-static CCS_IO_SHMVARIABLE CCS_IO_VARS[] = {
-    {0, "Test0", CCS_IO_SHMDATATYPE_BOOL},
-    {1, "Test1", CCS_IO_SHMDATATYPE_BOOL}
-};
-
 static void addVariablesToUA(UA_Server *server) {
     UA_UInt32 id = 200000;
     addFolder(server, "SHM", "Shared Memory IOs", "Folder for the IOs used by the plant emulation (Unity)",
               UA_NODEID_NUMERIC(NS_APPLICATION, id), UA_NODEID_NUMERIC(0, UA_NS0ID_OBJECTSFOLDER), false);
-    for (size_t i = 0; i < CCS_IO_VARS_SIZE; i++) {
-        addVariable(server, ++id, &CCS_IO_VARS[i]);
+    for (size_t i = 0; i < CCS_IOLIST_SIZE; i++) {
+        addVariable(server, ++id, &CCS_IOLIST[i]);
     }
 }
 
@@ -154,8 +158,6 @@ main(int argc, char **argv) {
     if(parseCLI(argc, argv, &port) != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
-
-
     /* Create an empty server with default settings */
     UA_Server *server = UA_Server_new();
     /* Customize server name and ns1 name */
@@ -163,13 +165,15 @@ main(int argc, char **argv) {
     setServerConfig(server, "BaSys Control Component Server", "ccs_server", port, UA_LOGLEVEL_INFO);
 
     // Create list of SHM variables
-    ccs_io_openSHM("Local\\Hilt3DShm", CCS_IO_VARS_SIZE); //TODO: get this from IO_Configuration.xml or cli
+    ccs_io_openSHM("Local\\Hilt3DShm", 150); //TODO: get this from IO_Configuration.xml or cli
     addVariablesToUA(server);
 
     // Create types and parent folder for dummy CCs
     createControlComponentEnvironment(server, NS_PROFILES_URI, "BaSysDemonstratorVendor");
 
-    createControlComponentFromType(server, 0);
+    //TODO: read IO_Configuration.xml to CCS_IOLIST in ccs_ioList.h
+    //TODO: get cc types and instances names from configuration file or cli
+    createControlComponentFromType(server, "RB01", "Robot");
 
     /* Run the control components */
     void *cc_executionLoopContext = cc_executionLoopContext_new(server);

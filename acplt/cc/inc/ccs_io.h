@@ -19,16 +19,6 @@ typedef struct {
     bool swap;
 } CCS_IO_SHMHANDLE;
 
-//DataTypes
-typedef enum {
-    CCS_IO_SHMDATATYPE_BOOL,
-    CCS_IO_SHMDATATYPE_INT,
-    CCS_IO_SHMDATATYPE_UINT,
-    CCS_IO_SHMDATATYPE_REAL,
-    CCS_IO_SHMDATATYPE_STRING,
-    CCS_IO_SHMDATATYPE_UNDEFINED
-} CCS_IO_SHMDATATYPE;
-
 typedef union {
 	bool boolean;
 	int integer;
@@ -36,12 +26,6 @@ typedef union {
 	float real;
 	char string[4];
 } CCS_IO_SHMANY;
-
-typedef struct {
-	unsigned int address;
-    char* name;
-    CCS_IO_SHMDATATYPE datatype;
-} CCS_IO_SHMVARIABLE;
 
 /*
  * SHM Handle open/close resource
