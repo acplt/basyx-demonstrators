@@ -72,13 +72,11 @@ ccs_type_conveyor_FPASS(C3_CC *cc, struct C3_OP_OpMode *opMode, C3_IO io, C3_ES_
     
      if(status.executionState == C3_ES_STATE_EXECUTE) {
         if(op->workState == 0) {
-            if(conveyor->FPass = true) {
             op->workState++;
             *workingState = "Conveyor move forwrd";
             conveyor->Forward = true;
             conveyor->LS01 = true;
             conveyor->LS02 = true;
-            } 
         }
 
     } else if(status.executionState == C3_ES_STATE_STOPPING){
