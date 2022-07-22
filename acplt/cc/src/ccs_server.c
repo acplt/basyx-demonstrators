@@ -174,6 +174,15 @@ main(int argc, char **argv) {
     //TODO: read IO_Configuration.xml to CCS_IOLIST in ccs_ioList.h
     //TODO: get cc types and instances names from configuration file or cli
     createControlComponentFromType(server, "RB01", "Robot");
+    createControlComponentFromType(server, "RB02", "Robot");
+    createControlComponentFromType(server, "GF01", "Conveyor");
+    createControlComponentFromType(server, "GF02", "Conveyor");
+    createControlComponentFromType(server, "GF03", "Conveyor");
+    createControlComponentFromType(server, "GF04", "Conveyor");
+    createControlComponentFromType(server, "GF05", "Conveyor");
+    createControlComponentFromType(server, "GF06", "Conveyor");
+    createControlComponentFromType(server, "GF07", "Conveyor");
+   
 
     /* Run the control components */
     void *cc_executionLoopContext = cc_executionLoopContext_new(server);

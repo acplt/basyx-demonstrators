@@ -15,6 +15,7 @@ set(CCSERVER_SOURCE_FILES
     "src/ccs_io.c"
     "src/ccs_type_generic.c"
     "src/ccs_type_robot.c"
+    "src/ccs_type_conveyor.c"
 )
 
 # Control Component Server executable
