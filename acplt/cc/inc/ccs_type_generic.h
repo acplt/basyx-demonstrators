@@ -15,5 +15,6 @@ typedef struct ccs_type_generic_OpMode {
 void ccs_type_generic_addOpMode(C3_CC* cc, char* name, void* opModeExecute);
 
 bool ccs_type_generic_findVariable(C3_Info info, char* variable, unsigned int* address);
+bool ccs_type_generic_findVariableByName(char* name, char* type, char* variable, unsigned int* address);
 
 #endif /* CCS_TYPE_GENERIC_H */

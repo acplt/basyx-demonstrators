@@ -56,16 +56,21 @@ ccs_type_generic_addOpMode(C3_CC* cc, char* name, void* opModeExecute) {
 }
 
 bool
-ccs_type_generic_findVariable(C3_Info info, char* variable, unsigned int* address) {
-    char* name = malloc(sizeof(char) * (strlen(info.name)+strlen(info.type)+strlen(variable)+3));
-    sprintf(name, "%s_%s.%s", info.name, info.type, variable);
+ccs_type_generic_findVariableByName(char* name, char* type, char* variable, unsigned int* address) {
+    char* signalName = malloc(sizeof(char) * (strlen(name)+strlen(type)+strlen(variable)+3));
+    sprintf(signalName, "%s_%s.%s", name, type, variable);
     for (size_t i = 0; i < CCS_IOLIST_SIZE; i++) {
-        if(strcmp(CCS_IOLIST[i].name, name) == 0) {
+        if(strcmp(CCS_IOLIST[i].name, signalName) == 0) {
             *address = CCS_IOLIST[i].address;
-            free(name);
+            free(signalName);
             return false;
         }
     }
-    free(name);
+    free(signalName);
     return false;
+}
+
+bool
+ccs_type_generic_findVariable(C3_Info info, char* variable, unsigned int* address) {
+    return ccs_type_generic_findVariableByName(info.name, info.type, variable, address);
 }

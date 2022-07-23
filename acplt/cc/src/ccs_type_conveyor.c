@@ -36,14 +36,18 @@ ccs_type_conveyor_ioAdd(C3_CC *cc) {
     CCS_TYPE_CONVEYOR_IOCONFIG* addresses = calloc(1, sizeof(CCS_TYPE_CONVEYOR_IOCONFIG));
     C3_Info info = C3_CC_getInfo(cc);
     bool result = false;
-    result &= ccs_type_generic_findVariable(info, "forward", &addresses->forward);
-    result &= ccs_type_generic_findVariable(info, "backward", &addresses->backward);
-    result &= ccs_type_generic_findVariable(info, "Lightdetector", &addresses->entry);
-    result &= ccs_type_generic_findVariable(info, "Lightdetector", &addresses->exit);
+    result &= ccs_type_generic_findVariable(info, "Forward", &addresses->forward);
+    result &= ccs_type_generic_findVariable(info, "Backward", &addresses->backward);
+    char lsName[16];
+    snprintf(lsName, 15, "%sLS01",info.name); //GF01LS01
+    result &= ccs_type_generic_findVariableByName(lsName, "Lightbarrier" , "Detected", &addresses->entry);
+    snprintf(lsName, 15, "%sLS02",info.name); //GF01LS02
+    result &= ccs_type_generic_findVariableByName(lsName, "Lightbarrier", "Detected", &addresses->exit);
    
     if(result == false){
-       
-}
+        //TODO handle error
+        fprintf(stderr, "Error reading io list for %s from type %s.", info.name, info.type);
+    }
     C3_IOConfig ioConfig = C3_IOCONFIG_NULL;
     ioConfig.context = addresses;
     ioConfig.init = ccs_type_conveyor_ioInit;

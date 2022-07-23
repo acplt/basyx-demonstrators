@@ -64,6 +64,7 @@ ccs_type_robot_ioAdd(C3_CC *cc) {
     result &= ccs_type_generic_findVariable(info, "IsClosed", &addresses->isClosed);
     if(result == false){
         //TODO handle error
+        fprintf(stderr, "Error reading io list for %s from type %s.", info.name, info.type);
     }
 
     C3_IOConfig ioConfig = C3_IOCONFIG_NULL;
