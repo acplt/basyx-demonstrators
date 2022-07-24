@@ -49,23 +49,18 @@ ccs_type_robot_ioWrite(void *context, C3_IO io) {
     ccs_io_writeValue_bool(address->dropOff, robot->dropOff);
 }
 
-void
+static void
 ccs_type_robot_ioAdd(C3_CC *cc) {
     CCS_TYPE_ROBOT_IOCONFIG* addresses = calloc(1, sizeof(CCS_TYPE_ROBOT_IOCONFIG));
     C3_Info info = C3_CC_getInfo(cc);
-    bool result = false;
-    result &= ccs_type_generic_findVariable(info, "Open", &addresses->open);
-    result &= ccs_type_generic_findVariable(info, "Close", &addresses->close);
-    result &= ccs_type_generic_findVariable(info, "Home", &addresses->home);
-    result &= ccs_type_generic_findVariable(info, "PickUp", &addresses->pickUp);
-    result &= ccs_type_generic_findVariable(info, "DropOff", &addresses->dropOff);
-    result &= ccs_type_generic_findVariable(info, "InPosition", &addresses->isInPos);
-    result &= ccs_type_generic_findVariable(info, "IsOpen", &addresses->isOpen);
-    result &= ccs_type_generic_findVariable(info, "IsClosed", &addresses->isClosed);
-    if(result == false){
-        //TODO handle error
-        fprintf(stderr, "Error reading io list for %s from type %s.", info.name, info.type);
-    }
+    ccs_type_generic_findVariable(info, "Open", &addresses->open);
+    ccs_type_generic_findVariable(info, "Close", &addresses->close);
+    ccs_type_generic_findVariable(info, "Home", &addresses->home);
+    ccs_type_generic_findVariable(info, "PickUp", &addresses->pickUp);
+    ccs_type_generic_findVariable(info, "DropOff", &addresses->dropOff);
+    ccs_type_generic_findVariable(info, "InPosition", &addresses->isInPos);
+    ccs_type_generic_findVariable(info, "IsOpen", &addresses->isOpen);
+    ccs_type_generic_findVariable(info, "IsClosed", &addresses->isClosed);
 
     C3_IOConfig ioConfig = C3_IOCONFIG_NULL;
     ioConfig.context = addresses;

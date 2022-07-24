@@ -63,9 +63,10 @@ ccs_type_generic_findVariableByName(char* name, char* type, char* variable, unsi
         if(strcmp(CCS_IOLIST[i].name, signalName) == 0) {
             *address = CCS_IOLIST[i].address;
             free(signalName);
-            return false;
+            return true;
         }
     }
+    fprintf(stderr, "Error. Didn't find signal in IO list: %s\n", signalName);
     free(signalName);
     return false;
 }

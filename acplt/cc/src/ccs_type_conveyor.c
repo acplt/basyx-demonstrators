@@ -25,33 +25,35 @@ static void
 ccs_type_conveyor_ioRead(void *context, C3_IO io) {
     CCS_TYPE_CONVEYOR_IO *conveyor = (CCS_TYPE_CONVEYOR_IO *)io;
     CCS_TYPE_CONVEYOR_IOCONFIG *address = (CCS_TYPE_CONVEYOR_IOCONFIG *)context;
-    ccs_io_readValue_bool(address->forward, &conveyor->forward);
-    ccs_io_readValue_bool(address->backward, &conveyor->backward);
     ccs_io_readValue_bool(address->entry, &conveyor->entry);
     ccs_io_readValue_bool(address->exit, &conveyor->exit);  
 }
 
-void
+static void
+ccs_type_conveyor_ioWrite(void *context, C3_IO io) {
+    CCS_TYPE_CONVEYOR_IO *robot = (CCS_TYPE_CONVEYOR_IO *)io;
+    CCS_TYPE_CONVEYOR_IOCONFIG *address = (CCS_TYPE_CONVEYOR_IOCONFIG *)context;
+    ccs_io_writeValue_bool(address->forward, robot->forward);
+    ccs_io_writeValue_bool(address->backward, robot->backward);
+}
+
+static void
 ccs_type_conveyor_ioAdd(C3_CC *cc) {
     CCS_TYPE_CONVEYOR_IOCONFIG* addresses = calloc(1, sizeof(CCS_TYPE_CONVEYOR_IOCONFIG));
     C3_Info info = C3_CC_getInfo(cc);
-    bool result = false;
-    result &= ccs_type_generic_findVariable(info, "Forward", &addresses->forward);
-    result &= ccs_type_generic_findVariable(info, "Backward", &addresses->backward);
+    ccs_type_generic_findVariable(info, "Forward", &addresses->forward);
+    ccs_type_generic_findVariable(info, "Backward", &addresses->backward);
     char lsName[16];
     snprintf(lsName, 15, "%sLS01",info.name); //GF01LS01
-    result &= ccs_type_generic_findVariableByName(lsName, "Lightbarrier" , "Detected", &addresses->entry);
+    ccs_type_generic_findVariableByName(lsName, "LightBarrier" , "Detected", &addresses->entry);
     snprintf(lsName, 15, "%sLS02",info.name); //GF01LS02
-    result &= ccs_type_generic_findVariableByName(lsName, "Lightbarrier", "Detected", &addresses->exit);
+    ccs_type_generic_findVariableByName(lsName, "LightBarrier", "Detected", &addresses->exit);
    
-    if(result == false){
-        //TODO handle error
-        fprintf(stderr, "Error reading io list for %s from type %s.", info.name, info.type);
-    }
     C3_IOConfig ioConfig = C3_IOCONFIG_NULL;
     ioConfig.context = addresses;
     ioConfig.init = ccs_type_conveyor_ioInit;
     ioConfig.read = ccs_type_conveyor_ioRead;
+    ioConfig.write = ccs_type_conveyor_ioWrite;
     C3_CC_setIOConfig(cc, ioConfig);
 }
 
@@ -84,7 +86,8 @@ ccs_type_conveyor_Position(C3_CC *cc, struct C3_OP_OpMode *opMode, C3_IO io, C3_
                 conveyor->backward = !forward;
                 op->workState++;
             case 1: // Wait till last lightbarrier is on
-                if(forward ? conveyor->exit : conveyor->entry) op->workState++;
+                if((forward ? conveyor->exit : conveyor->entry)) op->workState++;
+                break;
             case 2: // TAKE or PASS
                 if(strncmp(&opMode->name[1], "PASS", 4) == 0) { //Check if name of operation mode has TAKE in it (FPASS, BPASS)
                     *workingState = "Pass";
@@ -94,6 +97,7 @@ ccs_type_conveyor_Position(C3_CC *cc, struct C3_OP_OpMode *opMode, C3_IO io, C3_
                 }
             case 3: // PASS: Wait till last lightbarrier is off
                 if(!(forward ? conveyor->exit : conveyor->entry)) op->workState++;
+                break;
             case 4:
                 *workingState = "Leaving"; // Deutsch: Nachlauf
                 op->timer = now;
@@ -101,26 +105,36 @@ ccs_type_conveyor_Position(C3_CC *cc, struct C3_OP_OpMode *opMode, C3_IO io, C3_
                 break;
             case 5: // PASS done
                 if(now > (op->timer + UA_DATETIME_SEC)) {
-                    *workingState = forward ? "Passed exit" : "Passed entry";
+                    conveyor->forward = false;
+                    conveyor->backward = false;
                     *order = C3_ES_ORDER_SC;
                     break;
                 }
+                break;
             case 6: // TAKE
                 *workingState = "Positioning"; // Deutsch: Nachlauf
                 op->timer = now;
                 op->workState++;
                 break;
             case 7:
-                if(now > (op->timer + UA_DATETIME_MSEC * 200)) {
-                    *workingState = forward ? "Positioned at exit" : "Positioned at entry";
+                if(now > (op->timer + UA_DATETIME_MSEC * 50)) {
+                    conveyor->forward = false;
+                    conveyor->backward = false;
                     *order = C3_ES_ORDER_SC;
                 }
+                break;
         }
+    } else if(status.executionState == C3_ES_STATE_COMPLETING) {
+        if(strncmp(&opMode->name[1], "PASS", 4) == 0) //Check if name of operation mode has TAKE in it (FPASS, BPASS)
+            *workingState = forward ? "Passed exit" : "Passed entry";
+        else
+            *workingState = forward ? "Positioned at exit" : "Positioned at entry";
+        *order = C3_ES_ORDER_SC;
     } else if(status.executionState == C3_ES_STATE_STOPPING ||
               status.executionState == C3_ES_STATE_ABORTING){
+        *workingState = "Stop motor";
         conveyor->forward = false;
         conveyor->backward = false;
-        *workingState = "Stopping motor";
         *order = C3_ES_ORDER_SC;
     } else if(C3_ES_ISACTIVESTATE[status.executionState]) {
         // An active state, that was not covered / implemented (e.g. HOLDING, UNHOLDING)

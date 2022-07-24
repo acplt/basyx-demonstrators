@@ -10,6 +10,7 @@
 #include <ccs_io.h>
 #include <ccs_ioList.h>
 #include <ccs_type_robot.h>
+#include <ccs_type_conveyor.h>
 
 UA_Boolean running = true;
 static void
@@ -56,6 +57,7 @@ parseCLI(int argc, char **argv, UA_UInt16 *port) {
 }
 
 static int ccInstanceCounter = 0;
+static bool ccTypeInstaciated[2] = {0};
 
 static void
 createControlComponentFromType(UA_Server *server, char* name, char* type) {
@@ -68,17 +70,21 @@ createControlComponentFromType(UA_Server *server, char* name, char* type) {
     info.type = type;
     C3_CC_setInfo(cc, &info);
 
-    int typeNo = 0;
+    UA_NodeId typeId;
     if(strcmp(type, "Robot") == 0) {
         ccs_type_robot(cc);
-        typeNo = 1;
-    }else{
-        return;
+        typeId = UA_NODEID_NUMERIC(NS_DSTYPES, 1);
+    }else if(strcmp(type, "BeltConveyor") == 0){
+        ccs_type_conveyor(cc);
+        typeId = UA_NODEID_NUMERIC(NS_DSTYPES, 2);
     }
 
-    UA_NodeId typeId = UA_NODEID_NUMERIC(NS_DSTYPES, typeNo);
+    if(!ccTypeInstaciated[typeId.identifier.numeric-1]) {
+        ccTypeInstaciated[typeId.identifier.numeric-1] = true;
+        createControlComponentType(server, cc, typeId);
+    }
+
     UA_NodeId id = UA_NODEID_NUMERIC(NS_APPLICATION, ++ccInstanceCounter);
-    createControlComponentType(server, cc, typeId);
     createControlComponent(server, cc, typeId, id);
 }
 
@@ -175,14 +181,13 @@ main(int argc, char **argv) {
     //TODO: get cc types and instances names from configuration file or cli
     createControlComponentFromType(server, "RB01", "Robot");
     createControlComponentFromType(server, "RB02", "Robot");
-    createControlComponentFromType(server, "GF01", "Conveyor");
-    createControlComponentFromType(server, "GF02", "Conveyor");
-    createControlComponentFromType(server, "GF03", "Conveyor");
-    createControlComponentFromType(server, "GF04", "Conveyor");
-    createControlComponentFromType(server, "GF05", "Conveyor");
-    createControlComponentFromType(server, "GF06", "Conveyor");
-    createControlComponentFromType(server, "GF07", "Conveyor");
-   
+    createControlComponentFromType(server, "GF01", "BeltConveyor");
+    createControlComponentFromType(server, "GF02", "BeltConveyor");
+    createControlComponentFromType(server, "GF03", "BeltConveyor");
+    createControlComponentFromType(server, "GF04", "BeltConveyor");
+    createControlComponentFromType(server, "GF05", "BeltConveyor");
+    createControlComponentFromType(server, "GF06", "BeltConveyor");
+    createControlComponentFromType(server, "GF07", "BeltConveyor"); 
 
     /* Run the control components */
     void *cc_executionLoopContext = cc_executionLoopContext_new(server);

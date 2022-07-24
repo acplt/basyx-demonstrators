@@ -61,8 +61,7 @@ static CCS_IO_SHMVARIABLE CCS_IOLIST[] = {
     {114,"GF06LS01_LightBarrier.Detected", CCS_IO_SHMDATATYPE_BOOL},
     {115,"GF06LS02_LightBarrier.Detected", CCS_IO_SHMDATATYPE_BOOL},
     {116,"GF07LS01_LightBarrier.Detected", CCS_IO_SHMDATATYPE_BOOL},
-    {117,"GF07LS02_LightBarrier.Detected", CCS_IO_SHMDATATYPE_BOOL},
- 
+    {117,"GF07LS02_LightBarrier.Detected", CCS_IO_SHMDATATYPE_BOOL}
 };
 
 #endif /* CCS_IOLIST_H */
