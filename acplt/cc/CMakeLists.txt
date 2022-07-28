@@ -8,6 +8,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 # CCProfilesUA library overwrite options
 set(CCPUA_BUILD_PROFILESERVER OFF CACHE BOOL "Don't build profile server" FORCE)
 set(CCPUA_BUILD_TESTS OFF CACHE BOOL "Don't build tests for now" FORCE)
+set(CCPUA_BUILD_PACKML OFF CACHE BOOL "Don't use packML interface for smaller examples." FORCE)
 add_subdirectory(ccProfilesUA)
 
 # Source files excluding main
@@ -25,6 +26,6 @@ target_link_libraries(ccs_server ccProfilesUA)
 
 # Shared Memory Tool executable
 if(WIN32)
-add_executable(ccs_shmtool "src/ccs_io.c" "src/ccs_shmtool.c")
-target_include_directories(ccs_shmtool PUBLIC "inc")
+    add_executable(ccs_shmtool "src/ccs_io.c" "src/ccs_shmtool.c")
+    target_include_directories(ccs_shmtool PUBLIC "inc")
 endif()
