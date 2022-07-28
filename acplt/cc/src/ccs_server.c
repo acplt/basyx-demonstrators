@@ -22,6 +22,7 @@ static void
 usage(void) {
     printf("Usage: ccs_server");
     printf(" [--port <port>]");
+    printf(" [--ioPath <File path to IO_Configuration.xml>]");
     printf(" [--help]\n");
 }
 static void
@@ -31,12 +32,12 @@ usageError(const char *errorMsg) {
 }
 
 static int
-parseCLI(int argc, char **argv, UA_UInt16 *port) {
+parseCLI(int argc, char **argv, UA_UInt16 *port, char** ioPath) {
     for(int argpos = 1; argpos < argc; argpos++) {
         if(strcmp(argv[argpos], "--help") == 0 || strcmp(argv[argpos], "-h") == 0) {
             usage();
             printf(
-                "\n\tExample: ccs_server --port 16664\n");
+                "\n\tExample: ccs_server --port 16664 --ioPath ../IO_Configuration.xml\n");
             return EXIT_FAILURE;
         }
         // parse server url
@@ -47,6 +48,15 @@ parseCLI(int argc, char **argv, UA_UInt16 *port) {
                 return EXIT_FAILURE;
             }
             *port = strtol(argv[argpos], NULL, 10);
+            continue;
+        }
+        if(strcmp(argv[argpos], "--ioPath") == 0) {
+            argpos++;
+            if(argpos >= argc) {
+                usageError("parameter --ioPath given, but no path specified!");
+                return EXIT_FAILURE;
+            }
+            *ioPath = argv[argpos];
             continue;
         }
         // Unknown option
@@ -175,7 +185,8 @@ main(int argc, char **argv) {
 
     /* Parse command line arguments */
     UA_UInt16 port = 4840;
-    if(parseCLI(argc, argv, &port) != EXIT_SUCCESS)
+    char* ioPath = "IO_Configuration.xml";
+    if(parseCLI(argc, argv, &port, &ioPath) != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
     /* Create an empty server with default settings */
@@ -185,13 +196,13 @@ main(int argc, char **argv) {
     setServerConfig(server, "BaSys Control Component Server", "ccs_server", port, UA_LOGLEVEL_INFO);
 
     // Create list of SHM variables
-    ccs_io_openSHM("Local\\Hilt3DShm", 150); //TODO: get this from IO_Configuration.xml or cli
+    ccs_ioList_readIOConfigurationFromXML(ioPath);
+    ccs_io_openSHM(CCS_IOLIST_SHMNAME, CCS_IOLIST_SIZE);
     addVariablesToUA(server);
 
     // Create types and parent folder for dummy CCs
     createControlComponentEnvironment(server, NS_PROFILES_URI, "BaSysDemonstratorVendor");
 
-    //TODO: read IO_Configuration.xml to CCS_IOLIST in ccs_ioList.h
     //TODO: get cc types and instances names from configuration file or cli
     createControlComponentFromType(server, "RB01", "Robot");
     createControlComponentFromType(server, "RB02", "Robot");
