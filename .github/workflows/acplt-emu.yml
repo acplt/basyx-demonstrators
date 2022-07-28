@@ -9,24 +9,23 @@ on:
 
 jobs:
   build:
-    name: Build Emulation
-    runs-on: ubuntu-latest
+    name: Build Emulation for Windows
+    runs-on: windows-2019
+    strategy:
+      fail-fast: false
     steps:
-      # Checkout
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
+          fetch-depth: 0
           lfs: true
-
-      # Cache
-      - uses: actions/cache@v2
+      - name: Cache Library
+        uses: actions/cache@v2
         with:
           path: acplt/emulation/Library
           key: Library-${{ hashFiles('Assets/**', 'Packages/**', 'ProjectSettings/**') }}
           restore-keys: |
             Library-
-
-      # Build
       - name: Build project
         uses: game-ci/unity-builder@v2
         env:
@@ -34,11 +33,10 @@ jobs:
           UNITY_EMAIL: ${{ secrets.UNITY_EMAIL }}
           UNITY_PASSWORD: ${{ secrets.UNITY_PASSWORD }}
         with:
-          targetPlatform: StandaloneWindows64
           projectPath: acplt/emulation
-
-      # Output
-      - uses: actions/upload-artifact@v2
+          targetPlatform: StandaloneWindows64 
+      - name: Upload Emulation as Artifact
+        uses: actions/upload-artifact@v2
         with:
-          name: Build
-          path: acplt/emulation/build
+          name: Emulation
+          path: build
