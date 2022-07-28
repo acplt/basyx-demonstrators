@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "ccs_io.h": "c",
+        "ccs_type_robot.h": "c",
+        "ccs_type_generic.h": "c",
+        "ccs_iolist.h": "c",
+        "ccs_type_conveyor.h": "c"
+    }
+}
