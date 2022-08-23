@@ -14,6 +14,8 @@ jobs:
     strategy:
       fail-fast: false
     steps:
+      - name: Install Media Feature Pack
+        run: Get-WindowsCapability -online | Where-Object -Property name -like "*MediaFeaturePack*" | Add-WindowsCapability -Online
       - name: Checkout repository
         uses: actions/checkout@v2
         with:
