@@ -1,0 +1,239 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<bpmn:definitions xmlns:bpmn="http://www.omg.org/spec/BPMN/20100524/MODEL" xmlns:bpmndi="http://www.omg.org/spec/BPMN/20100524/DI" xmlns:dc="http://www.omg.org/spec/DD/20100524/DC" xmlns:camunda="http://camunda.org/schema/1.0/bpmn" xmlns:di="http://www.omg.org/spec/DD/20100524/DI" xmlns:modeler="http://camunda.org/schema/modeler/1.0" id="Definitions_1da7p4w" targetNamespace="http://bpmn.io/schema/bpmn" exporter="Camunda Modeler" exporterVersion="5.1.0" modeler:executionPlatform="Camunda Platform" modeler:executionPlatformVersion="7.17.0">
+  <bpmn:process id="acplt_ProvideCan" isExecutable="true">
+    <bpmn:startEvent id="StartEvent_1">
+      <bpmn:outgoing>Flow_07ewzrl</bpmn:outgoing>
+    </bpmn:startEvent>
+    <bpmn:endEvent id="Event_0n8mb39">
+      <bpmn:incoming>Flow_07jk1nb</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:parallelGateway id="Gateway_0mca9or">
+      <bpmn:incoming>Flow_0woqxeu</bpmn:incoming>
+      <bpmn:outgoing>Flow_15prtkm</bpmn:outgoing>
+      <bpmn:outgoing>Flow_1bpcuvq</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:parallelGateway id="Gateway_08imm5k">
+      <bpmn:incoming>Flow_0dwyv7y</bpmn:incoming>
+      <bpmn:incoming>Flow_1502w4i</bpmn:incoming>
+      <bpmn:outgoing>Flow_046m2l6</bpmn:outgoing>
+    </bpmn:parallelGateway>
+    <bpmn:sequenceFlow id="Flow_07ewzrl" sourceRef="StartEvent_1" targetRef="Activity_0dhqznv" />
+    <bpmn:sequenceFlow id="Flow_0woqxeu" sourceRef="Activity_0dhqznv" targetRef="Gateway_0mca9or" />
+    <bpmn:sequenceFlow id="Flow_15prtkm" sourceRef="Gateway_0mca9or" targetRef="Activity_0cpyu6h" />
+    <bpmn:sequenceFlow id="Flow_0dwyv7y" sourceRef="Activity_0cpyu6h" targetRef="Gateway_08imm5k" />
+    <bpmn:sequenceFlow id="Flow_046m2l6" sourceRef="Gateway_08imm5k" targetRef="Activity_0k339nc" />
+    <bpmn:sequenceFlow id="Flow_07jk1nb" sourceRef="Activity_0k339nc" targetRef="Event_0n8mb39" />
+    <bpmn:sequenceFlow id="Flow_1bpcuvq" sourceRef="Gateway_0mca9or" targetRef="Activity_028vje7" />
+    <bpmn:sequenceFlow id="Flow_1502w4i" sourceRef="Activity_028vje7" targetRef="Gateway_08imm5k" />
+    <bpmn:sequenceFlow id="Flow_1s61pnp" sourceRef="Event_1barqul" targetRef="Event_05od801" />
+    <bpmn:serviceTask id="Activity_0dhqznv" name="RB01.PP()" camunda:type="external" camunda:topic="basyx:ExecuteOnControlComponent">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="submodelId">http://basys4.de/submodels/controlcomponent/interface/demonstrator/RB01</camunda:inputParameter>
+          <camunda:outputParameter name="success">${success}</camunda:outputParameter>
+          <camunda:outputParameter name="messages">${messages}</camunda:outputParameter>
+          <camunda:outputParameter name="outputArguments">${outputArguments}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_07ewzrl</bpmn:incoming>
+      <bpmn:outgoing>Flow_0woqxeu</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_028vje7" name="GF02_FTAKEEXIT()" camunda:type="external" camunda:topic="basyx:ExecuteOnControlComponent">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="submodelId">http://basys4.de/submodels/controlcomponent/interface/demonstrator/GF02</camunda:inputParameter>
+          <camunda:outputParameter name="success">${success}</camunda:outputParameter>
+          <camunda:outputParameter name="messages">${messages}</camunda:outputParameter>
+          <camunda:outputParameter name="outputArguments">${outputArguments}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_1bpcuvq</bpmn:incoming>
+      <bpmn:outgoing>Flow_1502w4i</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_0cpyu6h" name="GF01_FPASS()" camunda:type="external" camunda:topic="basyx:ExecuteOnControlComponent">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="submodelId">http://basys4.de/submodels/controlcomponent/interface/demonstrator/GF01</camunda:inputParameter>
+          <camunda:outputParameter name="success">${success}</camunda:outputParameter>
+          <camunda:outputParameter name="messages">${messages}</camunda:outputParameter>
+          <camunda:outputParameter name="outputArguments">${outputArguments}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_15prtkm</bpmn:incoming>
+      <bpmn:outgoing>Flow_0dwyv7y</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:serviceTask id="Activity_0k339nc" name="Done" camunda:type="external" camunda:topic="basyx:InvokeOperation">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="submodelId">urn:basys:org.eclipse.basyx:submodels:SpeechControl:1.0.0</camunda:inputParameter>
+          <camunda:outputParameter name="success">${success}</camunda:outputParameter>
+          <camunda:outputParameter name="messages">${messages}</camunda:outputParameter>
+          <camunda:outputParameter name="outputArguments">${outputArguments}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_046m2l6</bpmn:incoming>
+      <bpmn:outgoing>Flow_07jk1nb</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:boundaryEvent id="Event_1barqul" attachedToRef="Activity_0dhqznv">
+      <bpmn:outgoing>Flow_1s61pnp</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_198ytrn" camunda:errorCodeVariable="basyx:InvokeOperation:Error" camunda:errorMessageVariable="ErrorRB1" />
+    </bpmn:boundaryEvent>
+    <bpmn:intermediateThrowEvent id="Event_05od801">
+      <bpmn:incoming>Flow_1s61pnp</bpmn:incoming>
+      <bpmn:linkEventDefinition id="LinkEventDefinition_0rm9ha0" name="Error" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="Flow_19hzm0g" sourceRef="Event_0smxhal" targetRef="Activity_1k0s52b" />
+    <bpmn:endEvent id="Event_0zsl66s">
+      <bpmn:incoming>Flow_0hzdcra</bpmn:incoming>
+    </bpmn:endEvent>
+    <bpmn:sequenceFlow id="Flow_0hzdcra" sourceRef="Activity_1k0s52b" targetRef="Event_0zsl66s" />
+    <bpmn:serviceTask id="Activity_1k0s52b" name="Say Error" camunda:type="external" camunda:topic="basyx:InvokeOperation">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="submodelId">urn:basys:org.eclipse.basyx:submodels:SpeechControl:1.0.0</camunda:inputParameter>
+          <camunda:outputParameter name="success">${success}</camunda:outputParameter>
+          <camunda:outputParameter name="messages">${messages}</camunda:outputParameter>
+          <camunda:outputParameter name="outputArguments">${outputArguments}</camunda:outputParameter>
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_19hzm0g</bpmn:incoming>
+      <bpmn:outgoing>Flow_0hzdcra</bpmn:outgoing>
+    </bpmn:serviceTask>
+    <bpmn:intermediateCatchEvent id="Event_0smxhal">
+      <bpmn:outgoing>Flow_19hzm0g</bpmn:outgoing>
+      <bpmn:linkEventDefinition id="LinkEventDefinition_1p6atsi" name="Error" />
+    </bpmn:intermediateCatchEvent>
+    <bpmn:boundaryEvent id="Event_1uw0vaq" attachedToRef="Activity_0cpyu6h">
+      <bpmn:outgoing>Flow_1oqlz4l</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_1axvdgf" camunda:errorCodeVariable="basyx:InvokeOperation:Error" camunda:errorMessageVariable="ErrorGF01" />
+    </bpmn:boundaryEvent>
+    <bpmn:intermediateThrowEvent id="Event_0a9e2cf">
+      <bpmn:incoming>Flow_1oqlz4l</bpmn:incoming>
+      <bpmn:linkEventDefinition id="LinkEventDefinition_1ybpk7m" name="Error" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="Flow_1oqlz4l" sourceRef="Event_1uw0vaq" targetRef="Event_0a9e2cf" />
+    <bpmn:boundaryEvent id="Event_00tp5sz" attachedToRef="Activity_028vje7">
+      <bpmn:outgoing>Flow_17c2l5d</bpmn:outgoing>
+      <bpmn:errorEventDefinition id="ErrorEventDefinition_1bgh3ah" camunda:errorCodeVariable="basyx:InvokeOperation:Error" camunda:errorMessageVariable="ErrorGF02" />
+    </bpmn:boundaryEvent>
+    <bpmn:intermediateThrowEvent id="Event_1mh8g4d">
+      <bpmn:extensionElements>
+        <camunda:inputOutput>
+          <camunda:inputParameter name="Input_0vho7mu" />
+        </camunda:inputOutput>
+      </bpmn:extensionElements>
+      <bpmn:incoming>Flow_17c2l5d</bpmn:incoming>
+      <bpmn:linkEventDefinition id="LinkEventDefinition_0h3syzf" name="" />
+    </bpmn:intermediateThrowEvent>
+    <bpmn:sequenceFlow id="Flow_17c2l5d" sourceRef="Event_00tp5sz" targetRef="Event_1mh8g4d" />
+  </bpmn:process>
+  <bpmndi:BPMNDiagram id="BPMNDiagram_1">
+    <bpmndi:BPMNPlane id="BPMNPlane_1" bpmnElement="acplt_ProvideCan">
+      <bpmndi:BPMNEdge id="Flow_17c2l5d_di" bpmnElement="Flow_17c2l5d">
+        <di:waypoint x="550" y="142" />
+        <di:waypoint x="550" y="118" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1oqlz4l_di" bpmnElement="Flow_1oqlz4l">
+        <di:waypoint x="550" y="425" />
+        <di:waypoint x="550" y="452" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0hzdcra_di" bpmnElement="Flow_0hzdcra">
+        <di:waypoint x="700" y="640" />
+        <di:waypoint x="752" y="640" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_19hzm0g_di" bpmnElement="Flow_19hzm0g">
+        <di:waypoint x="548" y="640" />
+        <di:waypoint x="600" y="640" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1s61pnp_di" bpmnElement="Flow_1s61pnp">
+        <di:waypoint x="350" y="425" />
+        <di:waypoint x="350" y="452" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1502w4i_di" bpmnElement="Flow_1502w4i">
+        <di:waypoint x="580" y="200" />
+        <di:waypoint x="630" y="200" />
+        <di:waypoint x="630" y="342" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_1bpcuvq_di" bpmnElement="Flow_1bpcuvq">
+        <di:waypoint x="430" y="342" />
+        <di:waypoint x="430" y="200" />
+        <di:waypoint x="480" y="200" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07jk1nb_di" bpmnElement="Flow_07jk1nb">
+        <di:waypoint x="780" y="367" />
+        <di:waypoint x="872" y="367" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_046m2l6_di" bpmnElement="Flow_046m2l6">
+        <di:waypoint x="655" y="367" />
+        <di:waypoint x="680" y="367" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0dwyv7y_di" bpmnElement="Flow_0dwyv7y">
+        <di:waypoint x="580" y="367" />
+        <di:waypoint x="605" y="367" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_15prtkm_di" bpmnElement="Flow_15prtkm">
+        <di:waypoint x="455" y="367" />
+        <di:waypoint x="480" y="367" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_0woqxeu_di" bpmnElement="Flow_0woqxeu">
+        <di:waypoint x="380" y="367" />
+        <di:waypoint x="405" y="367" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNEdge id="Flow_07ewzrl_di" bpmnElement="Flow_07ewzrl">
+        <di:waypoint x="215" y="367" />
+        <di:waypoint x="280" y="367" />
+      </bpmndi:BPMNEdge>
+      <bpmndi:BPMNShape id="_BPMNShape_StartEvent_2" bpmnElement="StartEvent_1">
+        <dc:Bounds x="179" y="349" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0n8mb39_di" bpmnElement="Event_0n8mb39">
+        <dc:Bounds x="872" y="349" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0k25kx7_di" bpmnElement="Gateway_0mca9or">
+        <dc:Bounds x="405" y="342" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Gateway_0nqots6_di" bpmnElement="Gateway_08imm5k">
+        <dc:Bounds x="605" y="342" width="50" height="50" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0a6y9tr_di" bpmnElement="Activity_0dhqznv">
+        <dc:Bounds x="280" y="327" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_0zzn5gt_di" bpmnElement="Activity_028vje7">
+        <dc:Bounds x="480" y="160" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_194ews4_di" bpmnElement="Activity_0cpyu6h">
+        <dc:Bounds x="480" y="327" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_1nhpsn3_di" bpmnElement="Activity_0k339nc">
+        <dc:Bounds x="680" y="327" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1pfh4mk_di" bpmnElement="Event_05od801">
+        <dc:Bounds x="332" y="452" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_0zsl66s_di" bpmnElement="Event_0zsl66s">
+        <dc:Bounds x="752" y="622" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Activity_10pp3v4_di" bpmnElement="Activity_1k0s52b">
+        <dc:Bounds x="600" y="600" width="100" height="80" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_1s4m9ci_di" bpmnElement="Event_0smxhal">
+        <dc:Bounds x="512" y="622" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1c91aow" bpmnElement="Event_0a9e2cf">
+        <dc:Bounds x="532" y="452" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1lu5y33" bpmnElement="Event_1mh8g4d">
+        <dc:Bounds x="532" y="82" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1612lm1" bpmnElement="Event_00tp5sz">
+        <dc:Bounds x="532" y="142" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="BPMNShape_1jgcjhj" bpmnElement="Event_1uw0vaq">
+        <dc:Bounds x="532" y="389" width="36" height="36" />
+      </bpmndi:BPMNShape>
+      <bpmndi:BPMNShape id="Event_13leymr_di" bpmnElement="Event_1barqul">
+        <dc:Bounds x="332" y="389" width="36" height="36" />
+      </bpmndi:BPMNShape>
+    </bpmndi:BPMNPlane>
+  </bpmndi:BPMNDiagram>
+</bpmn:definitions>
