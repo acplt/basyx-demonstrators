@@ -1,5 +1,6 @@
 [GENERAL]
 PORT = 2234
+HOST = 0.0.0.0
 
 [AUTHENTICATION]
 USER_FILE = users.dat

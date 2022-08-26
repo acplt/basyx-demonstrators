@@ -17,11 +17,11 @@ try:
     APP = flask.Flask(__name__)
     config = configparser.ConfigParser()
     config.read(["config.ini"])
-    print(config)
 
     # Read config file
     JWT_EXPIRATION_TIME: int = int(config["AUTHENTICATION"]["TOKEN_EXPIRATION_TIME"])  # JWT Expiration Time in minutes
     PORT: int = int(config["GENERAL"]["PORT"])
+    HOST: str = str(config["GENERAL"]["HOST"])
     STORAGE_DIR: str = os.path.abspath(config["STORAGE"]["STORAGE_DIR"])
     OBJECT_STORE: storage.RegistryObjectStore = storage.RegistryObjectStore(STORAGE_DIR)
     # todo: Create storage dir, if not existing
@@ -185,4 +185,4 @@ except Exception as e:
 if __name__ == '__main__':
     print("Running with configuration: {}".format({s: dict(config.items(s)) for s in config.sections()}))
     print("Found {} Users".format(len(auth.USERS)))
-    APP.run(port=PORT)
+    APP.run(port=PORT, host=HOST)
