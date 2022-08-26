@@ -34,22 +34,28 @@ ASSET_IDs: List[str] = [
 A simple Dict, mapping CC Submodel Identifier IRIs to OPC-UA Endpoint Addresses
 """
 CC_IDENTIFIER_TO_ENDPOINT_ADDRESS: Dict[str, str] = {}
-for i in ASSET_IDs:
-    CC_IDENTIFIER_TO_ENDPOINT_ADDRESS["{}{}".format(_BASE_SM_URL, i)] = "{}{}".format(_BASE_OPC_URL, i)
 
 cc_submodels: List[model.Submodel] = []
-for identifier_iri, opc_endpoint in CC_IDENTIFIER_TO_ENDPOINT_ADDRESS.items():
-    print("Generate CC Submodel for {}".format(identifier_iri))
-    cc_submodels.append(
-        control_component_submodel.generate_control_component_submodel(
-            identifier_iri=identifier_iri,
-            endpoint_address=opc_endpoint
+
+
+def update_cc_submodel_endpoints(host: str = "localhost",  port: int = 4840):
+    _BASE_OPC_URL = f"opc.tcp://{host}:{port}/0:Objects/1:CCs/1:"
+    
+    for i in ASSET_IDs:
+        CC_IDENTIFIER_TO_ENDPOINT_ADDRESS["{}{}".format(_BASE_SM_URL, i)] = "{}{}".format(_BASE_OPC_URL, i)
+
+    for identifier_iri, opc_endpoint in CC_IDENTIFIER_TO_ENDPOINT_ADDRESS.items():
+        print("Generate CC Submodel for {}".format(identifier_iri))
+        cc_submodels.append(
+            control_component_submodel.generate_control_component_submodel(
+                identifier_iri=identifier_iri,
+                endpoint_address=opc_endpoint
+            )
         )
-    )
 
 
-def write_cc_submodels_to_aas_repository_server_store():
-    store = storage.RegistryObjectStore("../store")
+def write_cc_submodels_to_aas_repository_server_store(storage_dir: str = "../store"):
+    store = storage.RegistryObjectStore(storage_dir)
     store.clear()
     for s in cc_submodels:
         print("Add CC Submodel to Repository: {}".format(s))
@@ -57,4 +63,5 @@ def write_cc_submodels_to_aas_repository_server_store():
 
 
 if __name__ == '__main__':
+    update_cc_submodel_endpoints()
     write_cc_submodels_to_aas_repository_server_store()
