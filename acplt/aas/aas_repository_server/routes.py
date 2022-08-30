@@ -3,7 +3,6 @@ try:
     import datetime
     import os
     import configparser
-    import argparse
     import json
     from typing import Optional, Set, Dict
 
@@ -14,12 +13,10 @@ try:
     from basyx.aas import model
     from basyx.aas.adapter.json import json_serialization, json_deserialization
     from aas_repository_server import auth, storage
-    from aas_repository_server.aas_generator import cc_identifier_to_endpoint_address
 
     APP = flask.Flask(__name__)
     config = configparser.ConfigParser()
-    config.read(["config.ini.default"])
-    config.read(["config.ini"])
+    config.read(["config.ini.default", "config.ini"])
 
     # Read config file
     JWT_EXPIRATION_TIME: int = int(config["AUTHENTICATION"]["TOKEN_EXPIRATION_TIME"])  # JWT Expiration Time in minutes
@@ -29,8 +26,6 @@ try:
     OBJECT_STORE: storage.RegistryObjectStore = storage.RegistryObjectStore(STORAGE_DIR)
     # todo: Create storage dir, if not existing
 
-    CC_PORT: int = int(config["CONTROLCOMPONENT"]["PORT"])
-    CC_HOST: str = str(config["CONTROLCOMPONENT"]["HOST"])
 
     @APP.route("/login", methods=["GET", "POST"])
     def login_user():
@@ -185,18 +180,10 @@ except Exception as e:
     tb = traceback.format_exc()
     print(tb)
     print(e)
-    input("Ups")
+    input("Unexpected Error occured.")
 
 if __name__ == '__main__':
-    cli_parser = argparse.ArgumentParser(description='Runs an Asset Administration Shell server via flask')
-    cli_parser.add_argument('-u', '--update', action='store_true', help='update the storage by generating submodels for control components (also updates their OPC UA endpoints from config)')
-    args = cli_parser.parse_args()
-
     print("Running with configuration: {}".format({s: dict(config.items(s)) for s in config.sections()}))
     print("Found {} Users".format(len(auth.USERS)))
-      
-    if args.update:
-        cc_identifier_to_endpoint_address.update_cc_submodel_endpoints(CC_HOST, CC_PORT)
-        cc_identifier_to_endpoint_address.write_cc_submodels_to_aas_repository_server_store(STORAGE_DIR)
     
     APP.run(port=PORT, host=HOST)
