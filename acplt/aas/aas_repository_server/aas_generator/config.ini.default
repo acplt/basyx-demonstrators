@@ -1,0 +1,24 @@
+[SUBMODEL]
+BASE_SM_URL = http://basys4.de/submodels/controlcomponent/instance/demonstrator/{}
+BASE_OPC_URL = opc.tcp://localhost:4840/0:Objects/1:CCs/1:{}
+STORAGE_DIR = store
+
+[ASSETS]
+IDS =   BP11
+        GF01
+        GF02
+        GF03
+        GF04
+        HA02
+        KR01
+        PL01
+        PM01
+        PP01
+        PP02
+        PP04
+        PS01
+        RB01
+        RB02
+        SP01
+        TS01
+        VA02
