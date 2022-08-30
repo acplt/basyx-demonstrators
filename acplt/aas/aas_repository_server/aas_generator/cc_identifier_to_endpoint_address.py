@@ -4,8 +4,8 @@ import os
 
 from basyx.aas import model
 
-import control_component_submodel
-from  aas_repository_server import storage
+from aas_generator import control_component_submodel
+import storage
 
 config = configparser.ConfigParser()
 config.read(
