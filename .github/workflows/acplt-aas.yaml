@@ -22,14 +22,15 @@ jobs:
         pip install pyinstaller
         pip install -r acplt\aas\requirements.txt
     - name: Create Asset Administration Shells
+      working-directory: acplt/aas/aas_repository_server
       run: |
-        cd acplt/aas/aas_repository_server
         python -m aas_generator.cc_identifier_to_endpoint_address
     - name: Build AAS Repository Server Executable
+      working-directory: acplt/aas/aas_repository_server
       run: |
-        pyinstaller acplt\aas\aas_repository_server\aas_repository_server.spec
+        pyinstaller aas_repository_server.spec
     - name: Archive AAS Repository Server
       uses: actions/upload-artifact@v3
       with:
         name: acplt-aas
-        path: dist\*
+        path: acplt/aas/aas_repository_server/dist/*

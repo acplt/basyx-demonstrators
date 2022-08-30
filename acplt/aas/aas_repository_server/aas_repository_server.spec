@@ -43,7 +43,7 @@ a_exe = EXE(a_pyz,
 # CC Submodel Generator Executable
 b = Analysis(
    ['aas_generator/cc_identifier_to_endpoint_address.py'],
-   pathex=[],
+   pathex=['.'],
    binaries=[],
    datas=[
       ('aas_generator/config.ini', 'aas_generator'),
