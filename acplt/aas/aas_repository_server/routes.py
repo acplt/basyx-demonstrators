@@ -23,8 +23,10 @@ try:
     PORT: int = int(config["GENERAL"]["PORT"])
     HOST: str = str(config["GENERAL"]["HOST"])
     STORAGE_DIR: str = os.path.abspath(config["STORAGE"]["STORAGE_DIR"])
+    if not os.path.exists(STORAGE_DIR):
+        print("Create new storage dir at: " + os.path.realpath(STORAGE_DIR))
+        os.makedirs(STORAGE_DIR)
     OBJECT_STORE: storage.RegistryObjectStore = storage.RegistryObjectStore(STORAGE_DIR)
-    # todo: Create storage dir, if not existing
 
 
     @APP.route("/login", methods=["GET", "POST"])
