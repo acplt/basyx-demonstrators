@@ -1,0 +1,4 @@
+pycamunda
+asyncua
+basyx-python-sdk
+pyinstaller

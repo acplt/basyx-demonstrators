@@ -1,0 +1,32 @@
+name: acplt-executor
+
+on:
+  push:
+    paths:
+      - .github/workflows/acplt-executor.yaml
+      - acplt/executor/**
+      - '!acplt/executor/**/README.md'
+    branches:
+      - acplt-executor
+
+jobs:
+  build_aas_repository:
+    runs-on: [windows-latest]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r acplt\executor\requirements.txt
+    - name: Build Executor
+      run: |
+        pyinstaller acplt\executor\executor.spec
+    - name: Archive Executor
+      uses: actions/upload-artifact@v3
+      with:
+        name: acplt-executor
+        path: |
+          dist/*
