@@ -23,6 +23,7 @@ usage(void) {
     printf("Usage: ccs_server");
     printf(" [--port <port>]");
     printf(" [--ioPath <File path to IO_Configuration.xml>]");
+//    printf(" [--loglevel DEBUG|INFO|WARN|ERROR|FATAL]");
     printf(" [--help]\n");
 }
 static void
@@ -32,7 +33,7 @@ usageError(const char *errorMsg) {
 }
 
 static int
-parseCLI(int argc, char **argv, UA_UInt16 *port, char** ioPath) {
+parseCLI(int argc, char **argv, UA_UInt16 *port, char** ioPath, UA_LogLevel *loglevel) {
     for(int argpos = 1; argpos < argc; argpos++) {
         if(strcmp(argv[argpos], "--help") == 0 || strcmp(argv[argpos], "-h") == 0) {
             usage();
@@ -40,7 +41,7 @@ parseCLI(int argc, char **argv, UA_UInt16 *port, char** ioPath) {
                 "\n\tExample: ccs_server --port 16664 --ioPath ../IO_Configuration.xml\n");
             return EXIT_FAILURE;
         }
-        // parse server url
+        // parse server port
         if(strcmp(argv[argpos], "--port") == 0) {
             argpos++;
             if(argpos >= argc) {
@@ -50,6 +51,7 @@ parseCLI(int argc, char **argv, UA_UInt16 *port, char** ioPath) {
             *port = strtol(argv[argpos], NULL, 10);
             continue;
         }
+        // parse io path
         if(strcmp(argv[argpos], "--ioPath") == 0) {
             argpos++;
             if(argpos >= argc) {
@@ -59,6 +61,29 @@ parseCLI(int argc, char **argv, UA_UInt16 *port, char** ioPath) {
             *ioPath = argv[argpos];
             continue;
         }
+        /*
+        if(strcmp(argv[argpos], "--loglevel") == 0) {
+            argpos++;
+            if(argpos >= argc) {
+                usageError("parameter --loglevel given, but no level specified!");
+                return EXIT_FAILURE;
+            }
+            if(strcmp(argv[argpos], "DEBUG") == 0)
+                *loglevel = UA_LOGLEVEL_DEBUG;
+            else if(strcmp(argv[argpos], "INFO") == 0)
+                *loglevel = UA_LOGLEVEL_INFO;
+            else if(strcmp(argv[argpos], "WARN") == 0)
+                *loglevel = UA_LOGLEVEL_WARNING;
+            else if(strcmp(argv[argpos], "ERROR") == 0)
+                *loglevel = UA_LOGLEVEL_ERROR;
+            else if(strcmp(argv[argpos], "FATAL") == 0)
+                *loglevel = UA_LOGLEVEL_FATAL;
+            else {
+                usageError("parameter --loglevel given, but loglevel unknown.\n Possible options are: DEBUG|INFO|WARN|ERROR|FATAL");
+                return EXIT_FAILURE;
+            }
+            continue;
+        }*/
         // Unknown option
         usageError("unknown command line option.");
         return EXIT_FAILURE;
@@ -95,6 +120,8 @@ createControlComponentFromType(UA_Server *server, char* name, char* type) {
     }
 
     UA_NodeId id = UA_NODEID_NUMERIC(NS_APPLICATION, ++ccInstanceCounter);
+    UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Create Control Component %s of type %s with id ns=%d;i=%d",
+     name, type, id.namespaceIndex, id.identifier.numeric);
     createControlComponent(server, cc, typeId, id);
 }
 
@@ -163,6 +190,7 @@ addVariable(UA_Server *server, UA_UInt32 id, CCS_IO_SHMVARIABLE* variable) {
     UA_DataSource simIODataSource;
     simIODataSource.read = readIO;
     simIODataSource.write = writeIO;
+    UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Add SHM variable %s with address %d", variable->name, variable->address);
     UA_Server_addDataSourceVariableNode(server, UA_NODEID_NUMERIC(NS_APPLICATION, id), UA_NODEID_NUMERIC(NS_APPLICATION, 200000),
                                         UA_NODEID_NUMERIC(0, UA_NS0ID_HASPROPERTY), UA_QUALIFIEDNAME(NS_APPLICATION, variable->name),
                                         UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), attr,
@@ -186,17 +214,19 @@ main(int argc, char **argv) {
     /* Parse command line arguments */
     UA_UInt16 port = 4840;
     char* ioPath = "IO_Configuration.xml";
-    if(parseCLI(argc, argv, &port, &ioPath) != EXIT_SUCCESS)
+    UA_LogLevel loglevel = UA_LOGLEVEL_INFO;
+    if(parseCLI(argc, argv, &port, &ioPath, &loglevel) != EXIT_SUCCESS)
         return EXIT_FAILURE;
 
     /* Create an empty server with default settings */
     UA_Server *server = UA_Server_new();
     /* Customize server name and ns1 name */
-    // TODO make loglevel a cli parameter
-    setServerConfig(server, "BaSys Control Component Server", "ccs_server", port, UA_LOGLEVEL_INFO);
+    printf("Loglevel:%d", loglevel);
+    setServerConfig(server, "BaSys Control Component Server", "ccs_server", port, loglevel);
 
     // Create list of SHM variables
     ccs_ioList_readIOConfigurationFromXML(ioPath);
+    UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Using SHM %s with size %d", CCS_IOLIST_SHMNAME, CCS_IOLIST_SIZE);
     ccs_io_openSHM(CCS_IOLIST_SHMNAME, CCS_IOLIST_SIZE);
     addVariablesToUA(server);
 
@@ -215,11 +245,14 @@ main(int argc, char **argv) {
     createControlComponentFromType(server, "GF07", "BeltConveyor"); 
 
     /* Run the control components */
+    //TODO make cycletime a CLI parameter
+    UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Starting Control Component execution loop with %d ms cycletime.", 10);
     void *cc_executionLoopContext = cc_executionLoopContext_new(server);
     UA_UInt64 cc_executionLoopId = 1;
     UA_Server_addRepeatedCallback(server, cc_executionLoop, cc_executionLoopContext, 10, &cc_executionLoopId);
 
     /* Run the server */
+    UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Starting OPC UA Server.");
     UA_StatusCode retval = UA_Server_run(server, &running);
 
     /* Free ressources */

@@ -34,10 +34,10 @@ ccs_ioList_readIOConfigurationFromXML(char* filepath){
         char shmName[64];     
         if(sscanf(shmNamePos, "shm=\"%63s\"", shmName)==1) {
             size_t shmNameLength = strlen(shmName);
-            CCS_IOLIST_SHMNAME = malloc(sizeof(char) * (shmNameLength + 7)); // "Local\\"
-            strncpy(CCS_IOLIST_SHMNAME, "Local\\", 7);
+            CCS_IOLIST_SHMNAME = malloc(sizeof(char) * (shmNameLength + 6)); // "Local\\"
+            strncpy(CCS_IOLIST_SHMNAME, "Local\\", 6);
             strncpy(&CCS_IOLIST_SHMNAME[6], shmName, shmNameLength-1); //cut off trailing "
-            CCS_IOLIST_SHMNAME[7 + shmNameLength] = '\0';
+            CCS_IOLIST_SHMNAME[5 + shmNameLength] = '\0';
         }
     }
 
