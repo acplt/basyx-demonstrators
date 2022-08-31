@@ -1,0 +1,4 @@
+[submodule "acplt/cc/ccProfilesUA"]
+	path = acplt/cc/ccProfilesUA
+	url = https://git.rwth-aachen.de/acplt/basys4.2/ccProfilesUA.git/
+	branch = master

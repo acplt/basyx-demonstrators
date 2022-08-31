@@ -1,0 +1,13 @@
+**/__pycache__/
+*.pyc
+/.idea/
+/.mypy_cache/
+/build/
+/dist/
+/*.egg-info/
+/venv/
+/.coverage
+/htmlcov/
+/docs/build/
+
+/aas_repository_server/store/

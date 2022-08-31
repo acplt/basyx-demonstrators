@@ -1,0 +1,32 @@
+name: acplt-cc
+
+on: 
+  push:
+    paths:
+      - .github/workflows/acplt.yml
+      - acplt/cc/**
+      - '!acplt/cc/**/README.md'
+
+jobs:
+  build-cc:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Install additional build dependencies
+      run: |
+        sudo apt-get -qq install -y --no-install-recommends gcc-mingw-w64-x86-64 g++-mingw-w64-x86-64
+    - name: Build control component server
+      run: |
+        cd acplt/cc
+        mkdir build
+        cd build
+        cmake -DCMAKE_TOOLCHAIN_FILE=../ccProfilesUA/cmake/Toolchain-x86_64-w64-mingw32.cmake ..
+        make -j 2
+    - name: Archive control component server
+      uses: actions/upload-artifact@v3
+      with:
+        name: acplt-cc
+        path: |
+          acplt/cc/build/bin/*.exe

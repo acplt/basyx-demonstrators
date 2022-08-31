@@ -1,0 +1,5 @@
+## all camunda files
+camunda-bpm-run-7.17.0
+camunda-bpm-run-7.17.0/*
+*.zip
+*.pdf

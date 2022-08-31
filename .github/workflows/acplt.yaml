@@ -1,0 +1,9 @@
+on:
+  push:
+    paths: 
+      - .github/workflows/acplt.yaml
+      - acplt/**
+      - '!acplt/**/README.md'
+    branches:
+      - 'acplt'
+      - 'main'

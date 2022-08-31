@@ -1,0 +1,36 @@
+name: acplt-aas
+
+on:
+  push:
+    paths: 
+      - .github/workflows/acplt-aas.yaml
+      - acplt/aas/**
+      - '!acplt/aas/**/README.md'
+    branches:
+      - acplt-aas
+
+jobs:
+  build_aas_repository:
+    runs-on: [windows-latest]
+    steps:
+    - uses: actions/checkout@v2
+      with:
+        submodules: recursive
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pyinstaller
+        pip install -r acplt\aas\requirements.txt
+    - name: Create Asset Administration Shells
+      working-directory: acplt/aas/aas_repository_server
+      run: |
+        python -m aas_generator.cc_identifier_to_endpoint_address
+    - name: Build AAS Repository Server Executable
+      working-directory: acplt/aas/aas_repository_server
+      run: |
+        pyinstaller aas_repository_server.spec
+    - name: Archive AAS Repository Server
+      uses: actions/upload-artifact@v3
+      with:
+        name: acplt-aas
+        path: acplt/aas/aas_repository_server/dist/*
