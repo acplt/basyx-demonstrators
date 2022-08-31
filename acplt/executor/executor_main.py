@@ -20,6 +20,8 @@ config.read(["config.ini.default", "config.ini"])
 LOGLEVEL = config["GENERAL"]["LOGLEVEL"]
 MAINLOGLEVEL = config["GENERAL"]["MAINLOGLEVEL"]
 CYCLETIME = float(config["GENERAL"]["CYCLETIME"])
+WORKER_QUEUE_SIZE = int(config["GENERAL"]["WORKER_QUEUE_SIZE"])
+WORKER_COUNT = int(config["GENERAL"]["WORKER_COUNT"])
 CAMUNDA_URL = config["CAMUNDA"]["REST_URL"]
 CAMUNDA_EXECUTOR_TOPIC = config["CAMUNDA"]["EXECUTOR_TOPIC"]
 AAS_URL = config["AAS"]["URL"]
@@ -37,6 +39,10 @@ class ExternalTaskError(ExcutorError):
     def __init__(self, message, external_task: pycamunda.externaltask.ExternalTask):
         self.externalTask = external_task
         self.message = message + f" while processing '{external_task.activity_id}' in '{external_task.process_definition_key}' for process {external_task.process_instance_id}"
+        try:
+            locked_external_task_ids.remove(external_task.id_)
+        except:
+            pass
         super().__init__(self.message)
 
 class ControlComponentError(ExcutorError):
@@ -119,6 +125,7 @@ class ControlComponent():
         self.operations_node = await self.cc_node.get_child("2:OPERATIONS")
         
         sub = await self.client.create_subscription(CC_CLIENT_SUBSCRIPTION_MS, ControlComponent.StatusHandler(self))
+        #TODO save handle to subsciptions (check if no Status Code is bad) and cance when cc is deleted
         await sub.subscribe_data_change([self.exst_node, self.opmode_node, self.workst_node])
         logger.debug(f"Connected to {self.name} with node ids: exst={self.exst_node.nodeid}, opmode={self.opmode_node.nodeid}, workst={self.workst_node}, operations={self.operations_node.nodeid}")
     
@@ -151,8 +158,10 @@ class ControlComponent():
         if self.exst in ["ABORTING", "ABORTED", "STOPPING", "STOPPED", "CLEARING", "RESETTING"]:
             raise ControlComponentError(f"Stopped or aborted while starting {self.opmode} for {self.name} with exst {self.exst}")
     
-    async def wait_for_completed(self,  opmode):
-        while self.exst != "COMPLETE" and self.opmode != opmode:
+    async def wait_for_completed(self, opmode):
+        while True:
+            if self.exst == "COMPLETE" and self.opmode == opmode:
+                break
             await self.wait()
         if self.exst in ["ABORTING", "ABORTED", "STOPPING", "STOPPED", "CLEARING", "RESETTING"]:
             raise ControlComponentError(f"Stopped or aborted while executing {self.opmode} for {self.name} with exst {self.exst}")
@@ -175,51 +184,69 @@ async def connect_and_execute_op_mode(opcua_endpoint: str, skill_name: str):
         # Wait for COMPLETE and OPMODE == skill_name, break by ABORTED, STOPPED cycles
         await cc.wait_for_completed(skill_name)
 
-_WORKER_ID = os.path.basename(__file__)+ "-" + str(os.getpid())
-_MAX_TASKS = 16
+_CAMUNDA_WORKER_ID = os.path.basename(__file__)+ "-" + str(os.getpid())
+locked_external_task_ids = []
+
+async def worker(name, queue):
+    while True:
+        external_task = await queue.get()
+        logger.info(f"{name} processing '{external_task.activity_id}' in '{external_task.process_definition_key}' for process {external_task.process_instance_id}")
+        try:
+            submodel_id, skill_name = await get_activity_instance_submodel_id(external_task)
+            logger.debug(f"{external_task.activity_id}: Extracted skill name '{skill_name}' from external task with submodel id: {submodel_id}")
+
+            # looks up the OPC UA endpoint of the control component
+            # which was requested by the service task in the AAS repository server via its HTTP/REST API
+            opcua_endpoint = await get_opcua_endpoint_from_cc_submodel(submodel_id)
+            logger.debug(f"{external_task.activity_id}: Extracted opcua endpoint '{opcua_endpoint}' from external task.")
+
+            # connects to the OPC UA endpoint and executes the desired operation mode (skill), via a control component protocol.
+            await connect_and_execute_op_mode(opcua_endpoint, skill_name)
+        
+            logger.info(f"{name} completed '{external_task.activity_id}' in '{external_task.process_definition_key}' for process {external_task.process_instance_id}")
+            locked_external_task_ids.remove(external_task.id_)
+            pycamunda.externaltask.Complete(CAMUNDA_URL, external_task.id_, _CAMUNDA_WORKER_ID)()
+
+        except Exception as e:
+            logger.warning(f"{e} while processing external task: {str(external_task)}")
+            locked_external_task_ids.remove(external_task.id_)
+            try:
+                pycamunda.externaltask.HandleFailure(CAMUNDA_URL, external_task.id_, _CAMUNDA_WORKER_ID, str(e), f"Error while executing skill {skill_name} on endpoint {opcua_endpoint} with submodel id {submodel_id}", 0, 500)()        
+            except:
+                pass
+        queue.task_done()
 
 async def main():
-    active_tasks = []
-    logger.info(f"Starting main loop with {CYCLETIME}s cycletime.")
-
+    queue = asyncio.Queue(WORKER_QUEUE_SIZE)
+    
+    tasks = []
+    for i in range(WORKER_COUNT):
+        task = asyncio.create_task(worker(f'Worker-{i}', queue))
+        tasks.append(task)
+    
+    logger.info(f"Starting main loop with {CYCLETIME}s cycletime and {WORKER_COUNT} tasks.")
     while True:
+        await asyncio.sleep(CYCLETIME)
+        
+        for external_task_id in locked_external_task_ids:
+            try:
+                pycamunda.externaltask.ExtendLock(CAMUNDA_URL, external_task_id, 2000*CYCLETIME, _CAMUNDA_WORKER_ID)()
+            except Exception as e:
+                locked_external_task_ids.remove(external_task_id)
+                logger.warn(str(e) + ". Couldn't extend lock for fetched external tasks: "+ str(locked_external_task_ids))
+        
+        if queue.full():
+            continue
         try:
             # queries the workflow engine Camunda for open service tasks via the Camunda HTTP/REST API
-            fetch_tasks = pycamunda.externaltask.FetchAndLock(CAMUNDA_URL, _WORKER_ID, _MAX_TASKS)
-            fetch_tasks.add_topic(CAMUNDA_EXECUTOR_TOPIC, CYCLETIME)
-            external_tasks = fetch_tasks()
+            fetch_tasks = pycamunda.externaltask.FetchAndLock(CAMUNDA_URL, _CAMUNDA_WORKER_ID, queue.maxsize-queue.qsize())
+            fetch_tasks.add_topic(CAMUNDA_EXECUTOR_TOPIC, 2000*CYCLETIME)
+            for external_task in fetch_tasks():
+                queue.put_nowait(external_task)
+                locked_external_task_ids.append(external_task.id_)
         except Exception as e:
-            logger.warn("Couldn't receive external task list: "+ e)
-            await asyncio.sleep(CYCLETIME)
-            continue
+            logger.warn(str(e) + ". Couldn't receive external task list.")
 
-        for external_task in external_tasks:
-            if external_task in active_tasks:
-                continue
-            
-            logger.info(f"Processing '{external_task.activity_id}' in '{external_task.process_definition_key}' for process {external_task.process_instance_id}")
-            active_tasks.append(external_task)
-            pycamunda.externaltask.ExtendLock(CAMUNDA_URL, external_task.id_, 10000, _WORKER_ID)
-            
-            try:
-                submodel_id, skill_name = await get_activity_instance_submodel_id(external_task)
-                logger.debug(f"{external_task.activity_id}: Extracted skill name '{skill_name}' from external task with submodel id: {submodel_id}")
-
-                # looks up the OPC UA endpoint of the control component
-                # which was requested by the service task in the AAS repository server via its HTTP/REST API
-                opcua_endpoint = await get_opcua_endpoint_from_cc_submodel(submodel_id)
-                logger.debug(f"{external_task.activity_id}: Extracted opcua endpoint '{opcua_endpoint}' from external task.")
-
-                # connects to the OPC UA endpoint and executes the desired operation mode (skill), via a control component protocol.
-                await connect_and_execute_op_mode(opcua_endpoint, skill_name)
-            except Exception as e:
-                logger.warning(f"{e} while processing external task: {str(external_task)}")
-                pycamunda.externaltask.HandleFailure(CAMUNDA_URL, external_task.id_, _WORKER_ID, str(e), f"Error while executing skill {skill_name} on endpoint {opcua_endpoint} with submodel id {submodel_id}", 0, 500)()
-                continue
-            logger.info(f"Completed '{external_task.activity_id}' in '{external_task.process_definition_key}' for process {external_task.process_instance_id}")
-            pycamunda.externaltask.Complete(CAMUNDA_URL, external_task.id_, _WORKER_ID)()
-            #active_tasks.remove(external_task)
-        await asyncio.sleep(CYCLETIME)
 
 if __name__ == '__main__':
     logging.basicConfig(level=LOGLEVEL) #TODO restrict to logging._nameToLevel.keys()
@@ -227,7 +254,6 @@ if __name__ == '__main__':
     logger.debug("Running with configuration: {}".format({s: dict(config.items(s)) for s in config.sections()}))    
     try:
         asyncio.run(main())
-        # TODO: check if async funktioniert
     except Exception as e:
         print(traceback.format_exc())
         logger.error(e)
