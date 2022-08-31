@@ -43,16 +43,15 @@ It is advised to remember the password, since it is hashed and salted and can no
 2. Import the `storage.RegistryObjectStore` 
 3. Add them to the RegistryObjectStore via the `.add()` function
 
-For the ease of use, run: 
+For the ease of use, run from `aas_repository_server` directory: 
 ```shell
-python aas_generator.cc_identifier_to_endpoint_address.py
+python -m aas_generator.cc_identifier_to_endpoint_address
 ```
-This automatically clears, generates and repopulates the AAS Repository Server with the suiting Control Component 
-Submodels needed for this Demonstrator
+This automatically clears, generates and repopulates the AAS Repository Server with the suiting Control Component Submodels needed for this Demonstrator configured by `aas_generator/config.ini`, for syntax and defautl values check `aas_generator/config.ini.default`
 
 ### Running the Server (The Hacky Way)
 
-Write a `config.ini`, for syntax check `config.ini.default`
+Write a `config.ini`, for syntax and default values check `config.ini.default`
 
 ```shell
 python routes.py
