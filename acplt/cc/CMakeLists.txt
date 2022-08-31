@@ -9,6 +9,7 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY ${CMAKE_BINARY_DIR}/bin)
 set(CCPUA_BUILD_PROFILESERVER OFF CACHE BOOL "Don't build profile server" FORCE)
 set(CCPUA_BUILD_TESTS OFF CACHE BOOL "Don't build tests for now" FORCE)
 set(CCPUA_BUILD_PACKML OFF CACHE BOOL "Don't use packML interface for smaller examples." FORCE)
+#set(UA_LOGLEVEL 200 CACHE STRING "Enable DEBUG loglevel" FORCE)
 add_subdirectory(ccProfilesUA)
 
 # Source files excluding main
