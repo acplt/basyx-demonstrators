@@ -190,7 +190,7 @@ addVariable(UA_Server *server, UA_UInt32 id, CCS_IO_SHMVARIABLE* variable) {
     UA_DataSource simIODataSource;
     simIODataSource.read = readIO;
     simIODataSource.write = writeIO;
-    UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Add SHM variable %s with address %d", variable->name, variable->address);
+    UA_LOG_DEBUG(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Add SHM variable %s with address %d", variable->name, variable->address);
     UA_Server_addDataSourceVariableNode(server, UA_NODEID_NUMERIC(NS_APPLICATION, id), UA_NODEID_NUMERIC(NS_APPLICATION, 200000),
                                         UA_NODEID_NUMERIC(0, UA_NS0ID_HASPROPERTY), UA_QUALIFIEDNAME(NS_APPLICATION, variable->name),
                                         UA_NODEID_NUMERIC(0, UA_NS0ID_BASEDATAVARIABLETYPE), attr,
