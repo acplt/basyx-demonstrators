@@ -1,7 +1,7 @@
 [GENERAL]
 LOGLEVEL = WARNING
 MAINLOGLEVEL = INFO
-CYCLETIME = 1.0
+CYCLETIME = 0.5
 
 [CAMUNDA]
 REST_URL = http://localhost:8080/engine-rest
@@ -11,3 +11,8 @@ EXECUTOR_TOPIC = basyx:ExecuteOnControlComponent
 URL = http://localhost:1120
 USER = test
 PWD = test
+
+[CC]
+CLIENT_TIMEOUT = 4.0
+CLIENT_SUBSCRIPTION_MS = 10
+WAITTIME = 0.05

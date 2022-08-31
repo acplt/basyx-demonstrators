@@ -8,6 +8,7 @@ a = Analysis(['executor_main.py'],
              binaries=[],
              datas=[
                 ('config.ini', '.'),
+                ('config.ini.default', '.'),
              ],
              hiddenimports=[],
              hookspath=[],

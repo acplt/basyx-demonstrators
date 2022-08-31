@@ -6,6 +6,8 @@ on:
       - .github/workflows/acplt-executor.yaml
       - acplt/executor/**
       - '!acplt/executor/**/README.md'
+    branches:
+      - acplt-executor
 
 jobs:
   build_aas_repository:
@@ -22,11 +24,9 @@ jobs:
     - name: Build Executor
       run: |
         pyinstaller acplt\executor\executor.spec
-        cd dist &&
-        7z a Executor_Windows.zip executor
     - name: Archive Executor
       uses: actions/upload-artifact@v3
       with:
         name: acplt-executor
         path: |
-          dist\Executor_Windows.zip
+          dist/*
