@@ -1,4 +1,4 @@
-#include <ccs_type_robot.h>
+#include <ccs_type.h>
 
 /* Input Output definitions */
 

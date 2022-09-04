@@ -7,10 +7,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-#include <ccs_io.h>
-#include <ccs_ioList.h>
-#include <ccs_type_robot.h>
-#include <ccs_type_conveyor.h>
+#include <ccs_type.h>
 
 UA_Boolean running = true;
 static void
@@ -243,7 +240,7 @@ main(int argc, char **argv) {
     createControlComponentFromType(server, "GF04", "BeltConveyor");
     createControlComponentFromType(server, "GF05", "BeltConveyor");
     createControlComponentFromType(server, "GF06", "BeltConveyor");
-    createControlComponentFromType(server, "GF07", "BeltConveyor"); 
+    createControlComponentFromType(server, "GF07", "BeltConveyor");
 
     /* Run the control components */
     //TODO make cycletime a CLI parameter
