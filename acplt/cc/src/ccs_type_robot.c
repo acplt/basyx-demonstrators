@@ -135,7 +135,7 @@ void ccs_type_robot(C3_CC* cc){
     CCS_TYPE_ROBOT_IO *io = calloc(1,sizeof(CCS_TYPE_ROBOT_IO));
     ccs_io_generic_addByNames(cc, (C3_IO*)io, 8,
         (char*[8]){"Open","Close","Home","PickUp","DropOff","InPosition","IsOpen","IsClosed"},
-        (unsigned int*)(void*[8]){&io->open, &io->close, &io->home, &io->pickUp, &io->dropOff, &io->isInPos, &io->isOpen, &io->isClosed}
+        (unsigned int**)(void*[8]){&io->open, &io->close, &io->home, &io->pickUp, &io->dropOff, &io->isInPos, &io->isOpen, &io->isClosed}
     );
 
     ccs_type_generic_addOpMode(cc, "PP", ccs_type_robot_PP);

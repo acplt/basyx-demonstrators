@@ -23,7 +23,7 @@ ccs_type_conveyor_ioAdd(C3_CC *cc) {
 
     CCS_TYPE_CONVEYOR_IO *io = calloc(1,sizeof(CCS_TYPE_CONVEYOR_IO));
     ccs_io_generic_add(cc, (C3_IO*)io, 4, variables,
-        (unsigned int*)(void*[4]){&io->forward, &io->backward, &io->entry, &io->exit});
+        (unsigned int**)(void*[4]){&io->forward, &io->backward, &io->entry, &io->exit});
 }
 
 /* Operation modes (skills) */

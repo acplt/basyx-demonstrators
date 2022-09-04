@@ -26,14 +26,17 @@ ccs_io_generic_init(void *context, C3_IO *io) {
     CCS_TYPE_GENERIC_IOCONFIG *config = (CCS_TYPE_GENERIC_IOCONFIG *)context;
     *io = config->io;
     for (size_t i = 0; i < config->size; i++) {
-        ccs_io_readValue(config->variables[i].address, &config->values[i]);
+        ccs_io_readValue(config->variables[i].address, config->values[i]);
     }
 }
 
 static void
 ccs_io_generic_clear(void *context) {
-    free(((CCS_TYPE_GENERIC_IOCONFIG *)context)->values);
-    free(context);
+    CCS_TYPE_GENERIC_IOCONFIG *config = (CCS_TYPE_GENERIC_IOCONFIG *)context;
+    free(config->variables);
+    free(config->values);
+    free(config->io);
+    free(config);
 }
 
 static void
@@ -41,7 +44,7 @@ ccs_io_generic_read(void *context, C3_IO io) {
     CCS_TYPE_GENERIC_IOCONFIG *config = (CCS_TYPE_GENERIC_IOCONFIG *)context;
     for (size_t i = 0; i < config->size; i++) {
         if(!config->variables[i].isOutput)
-            ccs_io_readValue(config->variables[i].address, &config->values[i]);
+            ccs_io_readValue(config->variables[i].address, config->values[i]);
     }
 }
 
@@ -49,30 +52,33 @@ static void
 ccs_io_generic_write(void *context, C3_IO io) {
     CCS_TYPE_GENERIC_IOCONFIG *config = (CCS_TYPE_GENERIC_IOCONFIG *)context;
     for (size_t i = 0; i < config->size; i++) {
-        if(!config->variables[i].isOutput)
-            ccs_io_writeValue(config->variables[i].address, config->values[i]);
+        if(config->variables[i].isOutput)
+            ccs_io_writeValue(config->variables[i].address, *config->values[i]);
     }
 }
 
 void
-ccs_io_generic_add(C3_CC *cc, C3_IO* io, size_t size, CCS_IO_SHMVARIABLE* variables, unsigned int* values){
+ccs_io_generic_add(C3_CC *cc, C3_IO* io, size_t size, CCS_IO_SHMVARIABLE* variables, unsigned int** values){
     CCS_TYPE_GENERIC_IOCONFIG* config = calloc(1, sizeof(CCS_TYPE_GENERIC_IOCONFIG));
-    config->variables = variables;
-    config->size = size;
-    config->values = values;
     config->io = io;
+    config->size = size;
+    config->variables = variables;
+    config->values = calloc(1, sizeof(unsigned int*));
+    for (size_t i = 0; i < size; i++) {
+        config->values[i] = values[i];
+    }
 
     C3_IOConfig ioConfig = C3_IOCONFIG_NULL;
     ioConfig.context = config;
     ioConfig.init = ccs_io_generic_init;
+    ioConfig.clear = ccs_io_generic_clear;
     ioConfig.read = ccs_io_generic_read;
     ioConfig.write = ccs_io_generic_write;
-    ioConfig.clear = ccs_io_generic_clear;
     C3_CC_setIOConfig(cc, ioConfig);
 }
 
 void
-ccs_io_generic_addByNames(C3_CC *cc, C3_IO* io, size_t size, char** names, unsigned int* values) {
+ccs_io_generic_addByNames(C3_CC *cc, C3_IO* io, size_t size, char** names, unsigned int** values) {
     CCS_IO_SHMVARIABLE* variables = calloc(size, sizeof(CCS_IO_SHMVARIABLE));
     C3_Info info = C3_CC_getInfo(cc);
     for (size_t i = 0; i < size; i++) {

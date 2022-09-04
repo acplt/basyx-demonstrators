@@ -117,7 +117,7 @@ void ccs_type_coverUnit(C3_CC* cc){
     CCS_TYPE_COVERUNIT_IO *io = calloc(1,sizeof(CCS_TYPE_COVERUNIT_IO));
     ccs_io_generic_addByNames(cc, (C3_IO*)io, 7,
         (char*[7]){"Up","Down","Unlock","Detected","Extracted","Retracted","Unlocked"},
-        (unsigned int*)(void*[7]){&io->up, &io->down, &io->unlock, &io->isDetected, &io->isExtracted, &io->isRetracted, &io->isUnlocked}
+        (unsigned int**)(void*[7]){&io->up, &io->down, &io->unlock, &io->isDetected, &io->isExtracted, &io->isRetracted, &io->isUnlocked}
     );
 
     ccs_type_generic_addOpMode(cc, "ASSEMBLY", ccs_type_coverUnit_Assemble);
