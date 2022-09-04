@@ -13,63 +13,6 @@ typedef struct CCS_TYPE_ROBOT_IO {
     bool isClosed;
 } CCS_TYPE_ROBOT_IO;
 
-typedef struct CCS_TYPE_ROBOT_IOCONFIG {
-    unsigned int open;
-    unsigned int close;
-    unsigned int home;
-    unsigned int pickUp;
-    unsigned int dropOff;
-    unsigned int isInPos;
-    unsigned int isOpen;
-    unsigned int isClosed;
-} CCS_TYPE_ROBOT_IOCONFIG;
-
-static void
-ccs_type_robot_ioInit(void *context, C3_IO *io) {
-    *io = calloc(1, sizeof(CCS_TYPE_ROBOT_IO));
-}
-
-static void
-ccs_type_robot_ioRead(void *context, C3_IO io) {
-    CCS_TYPE_ROBOT_IO *robot = (CCS_TYPE_ROBOT_IO *)io;
-    CCS_TYPE_ROBOT_IOCONFIG *address = (CCS_TYPE_ROBOT_IOCONFIG *)context;
-    ccs_io_readValue_bool(address->isInPos, &robot->isInPos);
-    ccs_io_readValue_bool(address->isOpen, &robot->isOpen);
-    ccs_io_readValue_bool(address->isClosed, &robot->isClosed);
-}
-
-static void
-ccs_type_robot_ioWrite(void *context, C3_IO io) {
-    CCS_TYPE_ROBOT_IO *robot = (CCS_TYPE_ROBOT_IO *)io;
-    CCS_TYPE_ROBOT_IOCONFIG *address = (CCS_TYPE_ROBOT_IOCONFIG *)context;
-    ccs_io_writeValue_bool(address->open, robot->open);
-    ccs_io_writeValue_bool(address->close, robot->close);
-    ccs_io_writeValue_bool(address->home, robot->home);
-    ccs_io_writeValue_bool(address->pickUp, robot->pickUp);
-    ccs_io_writeValue_bool(address->dropOff, robot->dropOff);
-}
-
-static void
-ccs_type_robot_ioAdd(C3_CC *cc) {
-    CCS_TYPE_ROBOT_IOCONFIG* addresses = calloc(1, sizeof(CCS_TYPE_ROBOT_IOCONFIG));
-    C3_Info info = C3_CC_getInfo(cc);
-    ccs_type_generic_findVariable(info, "Open", &addresses->open);
-    ccs_type_generic_findVariable(info, "Close", &addresses->close);
-    ccs_type_generic_findVariable(info, "Home", &addresses->home);
-    ccs_type_generic_findVariable(info, "PickUp", &addresses->pickUp);
-    ccs_type_generic_findVariable(info, "DropOff", &addresses->dropOff);
-    ccs_type_generic_findVariable(info, "InPosition", &addresses->isInPos);
-    ccs_type_generic_findVariable(info, "IsOpen", &addresses->isOpen);
-    ccs_type_generic_findVariable(info, "IsClosed", &addresses->isClosed);
-
-    C3_IOConfig ioConfig = C3_IOCONFIG_NULL;
-    ioConfig.context = addresses;
-    ioConfig.init = ccs_type_robot_ioInit;
-    ioConfig.read = ccs_type_robot_ioRead;
-    ioConfig.write = ccs_type_robot_ioWrite;
-    C3_CC_setIOConfig(cc, ioConfig);
-}
-
 /* Operation modes (skills) */
 
 static void
@@ -188,7 +131,12 @@ ccs_type_robot_PP(C3_CC *cc, struct C3_OP_OpMode *opMode, C3_IO io, C3_ES_Order 
 
 /* Instanciate the control component */
 
-void ccs_type_robot(C3_CC* cc){
+void ccs_type_robot(C3_CC* cc){   
+    CCS_TYPE_ROBOT_IO *io = calloc(1,sizeof(CCS_TYPE_ROBOT_IO));
+    ccs_io_generic_addByNames(cc, (C3_IO*)io, 8,
+        (char*[8]){"Open","Close","Home","PickUp","DropOff","InPosition","IsOpen","IsClosed"},
+        (unsigned int*)(void*[8]){&io->open, &io->close, &io->home, &io->pickUp, &io->dropOff, &io->isInPos, &io->isOpen, &io->isClosed}
+    );
+
     ccs_type_generic_addOpMode(cc, "PP", ccs_type_robot_PP);
-    ccs_type_robot_ioAdd(cc);
 }

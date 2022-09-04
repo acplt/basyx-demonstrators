@@ -16,6 +16,7 @@ add_subdirectory(ccProfilesUA)
 set(CCSERVER_SOURCE_FILES 
     "src/ccs_io.c"
     "src/ccs_ioList.c"
+    "src/ccs_io_generic.c"
     "src/ccs_type_generic.c"
     "src/ccs_type_robot.c"
     "src/ccs_type_conveyor.c"

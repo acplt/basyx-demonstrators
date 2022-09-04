@@ -9,52 +9,21 @@ typedef struct CCS_TYPE_CONVEYOR_IO {
     bool exit;
 } CCS_TYPE_CONVEYOR_IO;
 
-typedef struct CCS_TYPE_CONVEYOR_IOCONFIG {
-    unsigned int forward;
-    unsigned int backward;
-    unsigned int entry;
-    unsigned int exit;
-} CCS_TYPE_CONVEYOR_IOCONFIG;
-
-static void
-ccs_type_conveyor_ioInit(void *context, C3_IO *io) {
-    *io = calloc(1, sizeof(CCS_TYPE_CONVEYOR_IO));
-}
-
-static void
-ccs_type_conveyor_ioRead(void *context, C3_IO io) {
-    CCS_TYPE_CONVEYOR_IO *conveyor = (CCS_TYPE_CONVEYOR_IO *)io;
-    CCS_TYPE_CONVEYOR_IOCONFIG *address = (CCS_TYPE_CONVEYOR_IOCONFIG *)context;
-    ccs_io_readValue_bool(address->entry, &conveyor->entry);
-    ccs_io_readValue_bool(address->exit, &conveyor->exit);  
-}
-
-static void
-ccs_type_conveyor_ioWrite(void *context, C3_IO io) {
-    CCS_TYPE_CONVEYOR_IO *robot = (CCS_TYPE_CONVEYOR_IO *)io;
-    CCS_TYPE_CONVEYOR_IOCONFIG *address = (CCS_TYPE_CONVEYOR_IOCONFIG *)context;
-    ccs_io_writeValue_bool(address->forward, robot->forward);
-    ccs_io_writeValue_bool(address->backward, robot->backward);
-}
-
 static void
 ccs_type_conveyor_ioAdd(C3_CC *cc) {
-    CCS_TYPE_CONVEYOR_IOCONFIG* addresses = calloc(1, sizeof(CCS_TYPE_CONVEYOR_IOCONFIG));
+    CCS_IO_SHMVARIABLE* variables = calloc(4, sizeof(CCS_IO_SHMVARIABLE));
     C3_Info info = C3_CC_getInfo(cc);
-    ccs_type_generic_findVariable(info, "Forward", &addresses->forward);
-    ccs_type_generic_findVariable(info, "Backward", &addresses->backward);
+    ccs_io_generic_findVariable(info, "Forward", &variables[0]);
+    ccs_io_generic_findVariable(info, "Backward", &variables[1]);
     char lsName[16];
     snprintf(lsName, 15, "%sLS01",info.name); //GF01LS01
-    ccs_type_generic_findVariableByName(lsName, "LightBarrier" , "Detected", &addresses->entry);
+    ccs_io_generic_findVariableByName(lsName, "LightBarrier" , "Detected", &variables[2]);
     snprintf(lsName, 15, "%sLS02",info.name); //GF01LS02
-    ccs_type_generic_findVariableByName(lsName, "LightBarrier", "Detected", &addresses->exit);
-   
-    C3_IOConfig ioConfig = C3_IOCONFIG_NULL;
-    ioConfig.context = addresses;
-    ioConfig.init = ccs_type_conveyor_ioInit;
-    ioConfig.read = ccs_type_conveyor_ioRead;
-    ioConfig.write = ccs_type_conveyor_ioWrite;
-    C3_CC_setIOConfig(cc, ioConfig);
+    ccs_io_generic_findVariableByName(lsName, "LightBarrier", "Detected", &variables[3]);
+
+    CCS_TYPE_CONVEYOR_IO *io = calloc(1,sizeof(CCS_TYPE_CONVEYOR_IO));
+    ccs_io_generic_add(cc, (C3_IO*)io, 4, variables,
+        (unsigned int*)(void*[4]){&io->forward, &io->backward, &io->entry, &io->exit});
 }
 
 /* Operation modes (skills) */
@@ -147,10 +116,10 @@ ccs_type_conveyor_Position(C3_CC *cc, struct C3_OP_OpMode *opMode, C3_IO io, C3_
 /* Instanciate the control component */
 
 void ccs_type_conveyor(C3_CC* cc){
+    ccs_type_conveyor_ioAdd(cc);
+
     ccs_type_generic_addOpMode(cc, "FPASS", ccs_type_conveyor_Position);
     ccs_type_generic_addOpMode(cc, "FTAKE", ccs_type_conveyor_Position);
     ccs_type_generic_addOpMode(cc, "BPASS", ccs_type_conveyor_Position);
     ccs_type_generic_addOpMode(cc, "BTAKE", ccs_type_conveyor_Position);
-
-    ccs_type_conveyor_ioAdd(cc);
 }

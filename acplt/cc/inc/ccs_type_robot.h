@@ -2,6 +2,7 @@
 #define CCS_TYPE_ROBOT_H
 
 #include <ccs_type_generic.h>
+#include <ccs_io_generic.h>
 
 void ccs_type_robot(C3_CC* cc);
 

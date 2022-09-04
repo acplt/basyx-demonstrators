@@ -4,6 +4,7 @@
         "ccs_type_robot.h": "c",
         "ccs_type_generic.h": "c",
         "ccs_iolist.h": "c",
-        "ccs_type_conveyor.h": "c"
+        "ccs_type_conveyor.h": "c",
+        "ccs_io_generic.h": "c"
     }
 }
