@@ -10,6 +10,7 @@ C3_CC* ccs_type_createInstance(char* name, CCS_TYPE type) {
     info.name = name;
     info.description = name;
     info.profile = C3_PROFILE_BASYSDEMO;
+    info.profile.EM = C3_EM_AUTO | C3_EM_SIMULATE;
     info.type = (char*) CCS_TYPE_NAMES[type];
     C3_CC_setInfo(cc, &info);
 
