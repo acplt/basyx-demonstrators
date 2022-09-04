@@ -75,6 +75,9 @@ ccs_ioList_readIOConfigurationFromXML(char* filepath){
         else
             continue;
 
+        if(strstr(line, "direction=\"FromSHM\""))
+            CCS_IOLIST[signalCount].isOutput = true;
+
         size_t nameLen = strlen(name);
         CCS_IOLIST[signalCount].name = malloc(sizeof(char) * nameLen);
         strncpy(CCS_IOLIST[signalCount].name, name, nameLen-1); //cut off trailing "

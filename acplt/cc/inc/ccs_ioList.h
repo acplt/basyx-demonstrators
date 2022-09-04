@@ -19,6 +19,7 @@ typedef struct {
 	unsigned int address;
     char* name;
     CCS_IO_SHMDATATYPE datatype;
+    bool isOutput;
 } CCS_IO_SHMVARIABLE;
 
 extern unsigned int CCS_IOLIST_SIZE;

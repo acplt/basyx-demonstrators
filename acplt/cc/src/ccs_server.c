@@ -225,6 +225,7 @@ main(int argc, char **argv) {
     setServerConfig(server, "BaSys Control Component Server", "ccs_server", port, loglevel);
 
     // Create list of SHM variables
+    UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Read io config from: %s", ioPath);
     ccs_ioList_readIOConfigurationFromXML(ioPath);
     UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Using SHM %s with size %d", CCS_IOLIST_SHMNAME, CCS_IOLIST_SIZE);
     ccs_io_openSHM(CCS_IOLIST_SHMNAME, CCS_IOLIST_SIZE);
