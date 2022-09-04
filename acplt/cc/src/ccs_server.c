@@ -89,36 +89,21 @@ parseCLI(int argc, char **argv, UA_UInt16 *port, char** ioPath, UA_LogLevel *log
 }
 
 static int ccInstanceCounter = 0;
-static bool ccTypeInstaciated[2] = {0};
+static bool ccTypeInstaciated[CCS_TYPE_COUNT] = {0};
 
 static void
-createControlComponentFromType(UA_Server *server, char* name, char* type) {
-    C3_CC *cc = C3_CC_new();
-    C3_Info info;
-    info.id = name;
-    info.name = name;
-    info.description = name;
-    info.profile = C3_PROFILE_BASYSDEMO;
-    info.type = type;
-    C3_CC_setInfo(cc, &info);
+createControlComponentFromType(UA_Server *server, char* name, CCS_TYPE type) {
+    C3_CC* cc = ccs_type_createInstance(name, type);
 
-    UA_NodeId typeId;
-    if(strcmp(type, "Robot") == 0) {
-        ccs_type_robot(cc);
-        typeId = UA_NODEID_NUMERIC(NS_DSTYPES, 1);
-    }else if(strcmp(type, "BeltConveyor") == 0){
-        ccs_type_conveyor(cc);
-        typeId = UA_NODEID_NUMERIC(NS_DSTYPES, 2);
-    }
-
-    if(!ccTypeInstaciated[typeId.identifier.numeric-1]) {
-        ccTypeInstaciated[typeId.identifier.numeric-1] = true;
+    UA_NodeId typeId = UA_NODEID_NUMERIC(NS_DSTYPES, type + 1);
+    if(!ccTypeInstaciated[type]) {
+        ccTypeInstaciated[type] = true;
         createControlComponentType(server, cc, typeId);
     }
 
     UA_NodeId id = UA_NODEID_NUMERIC(NS_APPLICATION, ++ccInstanceCounter);
     UA_LOG_INFO(UA_Log_Stdout, UA_LOGCATEGORY_USERLAND, "Create Control Component %s of type %s with id ns=%d;i=%d",
-     name, type, id.namespaceIndex, id.identifier.numeric);
+     name, CCS_TYPE_NAMES[type], id.namespaceIndex, id.identifier.numeric);
     createControlComponent(server, cc, typeId, id);
 }
 
@@ -218,7 +203,6 @@ main(int argc, char **argv) {
     /* Create an empty server with default settings */
     UA_Server *server = UA_Server_new();
     /* Customize server name and ns1 name */
-    printf("Loglevel:%d", loglevel);
     setServerConfig(server, "BaSys Control Component Server", "ccs_server", port, loglevel);
 
     // Create list of SHM variables
@@ -232,15 +216,15 @@ main(int argc, char **argv) {
     createControlComponentEnvironment(server, NS_PROFILES_URI, "BaSysDemonstratorVendor");
 
     //TODO: get cc types and instances names from configuration file or cli
-    createControlComponentFromType(server, "RB01", "Robot");
-    createControlComponentFromType(server, "RB02", "Robot");
-    createControlComponentFromType(server, "GF01", "BeltConveyor");
-    createControlComponentFromType(server, "GF02", "BeltConveyor");
-    createControlComponentFromType(server, "GF03", "BeltConveyor");
-    createControlComponentFromType(server, "GF04", "BeltConveyor");
-    createControlComponentFromType(server, "GF05", "BeltConveyor");
-    createControlComponentFromType(server, "GF06", "BeltConveyor");
-    createControlComponentFromType(server, "GF07", "BeltConveyor");
+    createControlComponentFromType(server, "RB01", CCS_TYPE_ROBOT);
+    createControlComponentFromType(server, "RB02", CCS_TYPE_ROBOT);
+    createControlComponentFromType(server, "GF01", CCS_TYPE_CONVEYOR);
+    createControlComponentFromType(server, "GF02", CCS_TYPE_CONVEYOR);
+    createControlComponentFromType(server, "GF03", CCS_TYPE_CONVEYOR);
+    createControlComponentFromType(server, "GF04", CCS_TYPE_CONVEYOR);
+    createControlComponentFromType(server, "GF05", CCS_TYPE_CONVEYOR);
+    createControlComponentFromType(server, "GF06", CCS_TYPE_CONVEYOR);
+    createControlComponentFromType(server, "GF07", CCS_TYPE_CONVEYOR);
 
     /* Run the control components */
     //TODO make cycletime a CLI parameter
