@@ -9,9 +9,6 @@
 #include <stdbool.h>
 #include <string.h>
 
-#define SHM_DEFAULT_ADDRESS 0
-#define SHM_VALUESIZE 4		  //Every value is 4 Byte big.
-
 typedef struct {
 	void * hMapFile;
 	unsigned int* shm;
@@ -19,37 +16,21 @@ typedef struct {
     bool swap;
 } CCS_IO_SHMHANDLE;
 
-typedef union {
-	bool boolean;
-	int integer;
-	unsigned int uint;
-	float real;
-	char string[4];
-} CCS_IO_SHMANY;
-
 /*
  * SHM Handle open/close resource
  */
- void ccs_io_closeSHM();
- bool ccs_io_openSHM(char* name, unsigned int size);
+void ccs_io_closeSHM();
+bool ccs_io_openSHM(char* name, unsigned int size);
 
 /*
  * Read values.
  */
- bool ccs_io_readValue(unsigned int address, CCS_IO_SHMANY * pValue);
- bool ccs_io_readValue_bool(unsigned int address, bool* pValue);
- bool ccs_io_readValue_int(unsigned int address, int* pValue);
- bool ccs_io_readValue_uint(unsigned int address, unsigned int* pValue);
- bool ccs_io_readValue_real(unsigned int address, float* pValue);
+bool ccs_io_readValue(unsigned int address, unsigned int* value);
 
 /*
  * Write values.
  */
- bool ccs_io_writeValue(unsigned int address, CCS_IO_SHMANY value);
- bool ccs_io_writeValue_bool(unsigned int address, bool value);
- bool ccs_io_writeValue_int(unsigned int address, int value);
- bool ccs_io_writeValue_uint(unsigned int address, unsigned int value);
- bool ccs_io_writeValue_real(unsigned int address, float value);
- bool ccs_io_writeValue_string(unsigned int address, char* value, unsigned int maxSize);
+bool ccs_io_writeValue(unsigned int address, unsigned int value);
+bool ccs_io_writeValue_string(unsigned int address, char* value, unsigned int maxSize);
 
 #endif /* CCS_IO_H */

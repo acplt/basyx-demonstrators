@@ -121,9 +121,9 @@ main(int argc, char **argv) {
         }
         while(interactive) {
             if(write) {
-                result = ccs_io_writeValue_uint(address, value);       
+                result = ccs_io_writeValue(address, value);       
             }else{
-                result = ccs_io_readValue_uint(address, &value);
+                result = ccs_io_readValue(address, &value);
             }
             if(!result){
                 fprintf(stderr, "Error while accessing the address %d. Error message:\n%s\n", address, GetLastError());
@@ -141,9 +141,9 @@ main(int argc, char **argv) {
         }
     }else if(addressSpecified){
         if(write) {
-            result = ccs_io_writeValue_uint(address, value);       
+            result = ccs_io_writeValue(address, value);       
         }else{
-            result = ccs_io_readValue_uint(address, &value);
+            result = ccs_io_readValue(address, &value);
         }
         if(!result){
             fprintf(stderr, "Error while accessing the address %d. Error message:\n%s\n", address, GetLastError());

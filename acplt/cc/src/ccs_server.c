@@ -130,7 +130,7 @@ static UA_StatusCode
 readIO(UA_Server *server, const UA_NodeId *sessionId, void *sessionContext, const UA_NodeId *nodeId, void *nodeContext,
           UA_Boolean sourceTimeStamp, const UA_NumericRange *range, UA_DataValue *dataValue) {
     CCS_IO_SHMVARIABLE* shmVar = (CCS_IO_SHMVARIABLE*) nodeContext;
-    CCS_IO_SHMANY shmValue = {0};
+    unsigned int shmValue = 0;
     if(ccs_io_readValue(shmVar->address, &shmValue)) {
         dataValue->hasValue = true;
     }
@@ -138,14 +138,14 @@ readIO(UA_Server *server, const UA_NodeId *sessionId, void *sessionContext, cons
     UA_StatusCode result = UA_STATUSCODE_GOOD;
     switch (shmVar->datatype) {
         case CCS_IO_SHMDATATYPE_INT:
-            return UA_Variant_setScalarCopy(&dataValue->value, (void*)&shmValue.integer, &UA_TYPES[UA_TYPES_INT32]);
+            return UA_Variant_setScalarCopy(&dataValue->value, (void*)&shmValue, &UA_TYPES[UA_TYPES_INT32]);
         case CCS_IO_SHMDATATYPE_UINT:
-            return UA_Variant_setScalarCopy(&dataValue->value, (void*)&shmValue.uint, &UA_TYPES[UA_TYPES_UINT32]);
+            return UA_Variant_setScalarCopy(&dataValue->value, (void*)&shmValue, &UA_TYPES[UA_TYPES_UINT32]);
         case CCS_IO_SHMDATATYPE_REAL:
-            return UA_Variant_setScalarCopy(&dataValue->value, (void*)&shmValue.real, &UA_TYPES[UA_TYPES_FLOAT]);
+            return UA_Variant_setScalarCopy(&dataValue->value, (void*)&shmValue, &UA_TYPES[UA_TYPES_FLOAT]);
         default:
         case CCS_IO_SHMDATATYPE_BOOL:
-            return UA_Variant_setScalarCopy(&dataValue->value, (void*)&shmValue.boolean, &UA_TYPES[UA_TYPES_BOOLEAN]);
+            return UA_Variant_setScalarCopy(&dataValue->value, (void*)&shmValue, &UA_TYPES[UA_TYPES_BOOLEAN]);
         case CCS_IO_SHMDATATYPE_STRING:
             return UA_STATUSCODE_BADNOTIMPLEMENTED;
     }
@@ -155,19 +155,19 @@ static UA_StatusCode
 writeIO(UA_Server *server, const UA_NodeId *sessionId, void *sessionContext, const UA_NodeId *nodeId, void *nodeContext,
            const UA_NumericRange *range, const UA_DataValue *data) {
     CCS_IO_SHMVARIABLE* shmVar = (CCS_IO_SHMVARIABLE*) nodeContext;
-    CCS_IO_SHMANY shmValue = {0};
+    unsigned int shmValue = 0;
     switch (shmVar->datatype) {
         case CCS_IO_SHMDATATYPE_BOOL:
-            shmValue.boolean = *((bool*)(data->value.data));
+            shmValue = *((bool*)(data->value.data));
             break;
         case CCS_IO_SHMDATATYPE_INT:
-            shmValue.integer = *((UA_Int32*)(data->value.data));
+            shmValue = *((UA_Int32*)(data->value.data));
             break;
         case CCS_IO_SHMDATATYPE_UINT:
-            shmValue.uint = *((UA_UInt32*)(data->value.data));
+            shmValue = *((UA_UInt32*)(data->value.data));
             break;
         case CCS_IO_SHMDATATYPE_REAL:
-            shmValue.real = *((UA_Float*)(data->value.data));
+            shmValue = *((UA_Float*)(data->value.data));
             break;
         case CCS_IO_SHMDATATYPE_STRING:
             return UA_STATUSCODE_BADNOTIMPLEMENTED;
