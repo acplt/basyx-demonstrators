@@ -225,6 +225,7 @@ main(int argc, char **argv) {
     createControlComponentFromType(server, "GF05", CCS_TYPE_CONVEYOR);
     createControlComponentFromType(server, "GF06", CCS_TYPE_CONVEYOR);
     createControlComponentFromType(server, "GF07", CCS_TYPE_CONVEYOR);
+    createControlComponentFromType(server, "FS01", CCS_TYPE_COVERUNIT);
 
     /* Run the control components */
     //TODO make cycletime a CLI parameter
